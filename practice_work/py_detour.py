@@ -11,12 +11,11 @@ def go_up():
 			break
 	os.chdir(start_position)
 def start_detour():
-        listd = os.listdir()
-        for i in range(len(listd)):
-                cur = os.getcwd()+'\\'+listd[i]
+        for i in os.listdir():
+                cur = os.getcwd()+'\\'+i
                 if os.path.isdir(cur):
-                        go_in(listd[i])
+                        go_in(i)
                         start_detour()
                         go_up()
                 else:
-                        print(listd[i])
+                        print(i)

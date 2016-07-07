@@ -42,10 +42,10 @@ def login():
 		current_password = getpass.getpass("введите пароль: ")
 		if current_password == users[current_username]:
 			try:
-				os.chdir(var.destination + current_username+"/")
+				os.chdir(var.users_destination + current_username+"/")
 			except:
-				os.mkdir(var.destination + current_username+"/")
-				os.chdir(var.destination + current_username+"/")
+				os.mkdir(var.users_destination + current_username+"/")
+				os.chdir(var.users_destination + current_username+"/")
 			print(os.getcwd())
 			print("ok")
 			break

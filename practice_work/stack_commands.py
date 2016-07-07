@@ -8,9 +8,10 @@ def make_stack(username,project_name):
 	element ={}
 	element["user"] = username
 	element["date-time"] = datetime.now()
-	path_to_stack = "/"+"/".join([project_name,"global_stack.txt"])
+	path_to_stack = "/"+"/".join([project_name,"stack.txt"])
 	element["changes"] = {path_to_stack:"added"}
-
+	stack.append(element)
+	return stack
 
 
 

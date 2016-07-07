@@ -38,27 +38,27 @@ def execute_query(command):
 	if command == 'help':
 		help()
 	elif command == 'show_prjs':
-		print(1)
+
 	elif command == 'set_prj':
-		print(1)
+
 	elif command == 'add_prj':
-		print(1)
+
 	elif command == 'set_ver':
-		print(1)
+
 	elif command == 'set_file':
-		print(1)
+
 	elif command == 'add':
-		print(1)
+
 	elif command == 'commit':
-		print(1)
+
 	elif command == 'del_in_index':
-		print(1)
+
 	elif command == 'del_file':
-		print(1)
+
 	elif command == 'get_status':
-		print(1)
+
 	elif command == 'exit':
-		print(1)
+		
 	else:
 		print('Такой команды нет. Пожалуйста, повторите ввод.')
 		help()

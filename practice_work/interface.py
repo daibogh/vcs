@@ -3,7 +3,7 @@
 	help
 	set_prj
 	set_file
-	set_ver   выбрать версию 
+	set_ver   выбрать версию
 	show_prjs
 
 	commit
@@ -16,7 +16,7 @@
 	можно добавить команду клонирования в выбранный каталог
 '''
 def help():
-	''Можно сделать вывод из файла''
+	'''Можно сделать вывод из файла'''
 	print('\t\tСписок команд:\n')
 	print('\thelp - Вывести список команд')
 	print('\tshow_prjs - Вывести список всех проектов')
@@ -38,27 +38,27 @@ def execute_query(command):
 	if command == 'help':
 		help()
 	elif command == 'show_prjs':
-		/
+		print(1)
 	elif command == 'set_prj':
-		/
+		print(1)
 	elif command == 'add_prj':
-		/
+		print(1)
 	elif command == 'set_ver':
-		/
+		print(1)
 	elif command == 'set_file':
-		/
+		print(1)
 	elif command == 'add':
-		/
+		print(1)
 	elif command == 'commit':
-		/
+		print(1)
 	elif command == 'del_in_index':
-		/
+		print(1)
 	elif command == 'del_file':
-		/
+		print(1)
 	elif command == 'get_status':
-		/
+		print(1)
 	elif command == 'exit':
-		/
+		print(1)
 	else:
 		print('Такой команды нет. Пожалуйста, повторите ввод.')
 		help()
@@ -67,8 +67,10 @@ import commands
 def interface(user):
 	print("выберите команду(чтобы узнать список команд, наберите help)")
 	print('>>', end=' ')
-	while (command = import()) != 'exit':
+	#while (command = input()) != 'exit':
+	while True:
+		command = input()
 		execute_query(command)
+		if command == 'exit':
+			break
 		print('>>', end=' ')
-
-

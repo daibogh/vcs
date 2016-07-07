@@ -3,7 +3,7 @@ import getpass
 import os
 import variables as var
 try:
-	f = open("users.txt",'rb')
+	f = open(var.administration+"users.txt",'rb')
 	users = pickle.load(f)
 	f.close()
 except:
@@ -20,7 +20,8 @@ def registration_form():
 		else:
 			print("пароли не совпадают, введите заново\n")
 	users[new_username] = password
-	f = open("users.txt","wb")
+	os.mkdir(var.users_destination+new_username)
+	f = open(var.administration+"users.txt","wb")
 	pickle.dump(users,f)
 	f.close()
 

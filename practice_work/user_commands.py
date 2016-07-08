@@ -13,7 +13,7 @@ import pickle
 def commit(username):
 	stack = get_stack()
 	stack.append(updates)
-	f = open("version_control.txt","wb")
+	f = open("stack.txt","wb")
 	pickle.dump(stack,f)
 	f.close()
 
@@ -22,7 +22,7 @@ def commit(username):
 def push(username):
 	check = check_updates()
 	if check:
-		f = open(var.global_destination+project_name+"/global_control_version.txt","rb")
+		f = open(var.global_destination+project_name+"/stack.txt","rb")
 		global_stack = pickle.load(f)
 		f.close()
 		f = open()
@@ -58,7 +58,7 @@ def make_project(username,project_name):
 
 	os.chdir(var.global_destination+project_name+'/')
 	global_stack = sc.make_stack(username,project_name)
-	f = open("global_stack.txt","wb")
+	f = open("stack.txt","wb")
 	pickle.dump(global_stack,f)
 	f.close()
 	local_stack = global_stack
@@ -67,7 +67,7 @@ def make_project(username,project_name):
 	except:
 		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name+"/")
 	os.chdir(var.users_destination+"/"+username+"/"+project_name+"/")
-	f = open("local_stack.txt","wb")
+	f = open("stack.txt","wb")
 	pickle.dump(local_stack,f)
 	f.close()
 	return 0

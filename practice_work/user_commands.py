@@ -71,5 +71,79 @@ def make_project(username,project_name):
 	pickle.dump(local_stack,f)
 	f.close()
 	return 0
+    
+def show_com_username(username, project_name, num):
+    path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
+    dirs_in_user = os.listdir(path+username)
+    isEmpty = True
+    for dir_in_user in dirs_in_user:
+        isEmpty = False
+        if os.path.isdir(path+username+'\\'+dir_in_user+'\\') == True and project_name == dir_in_user:
+            psth_to_project = path + username + '\\' + project_name + '\\'
+            os.chdir(psth_to_project)
+            f = open('stack.txt', 'rb')
+            stack = pickle.load(f)
+            print('Изменения в проекте', project_name, 'были сделаны пользователем', stack[num]['user'])
+            f.close()
+            return stack[num]['user']
+
+    if isEmpty:
+        print('В VCS ещё не зарегистрирован ни один пользователь')
+        return
+def show_com_date_time(username, project_name, num):
+    path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
+    dirs_in_user = os.listdir(path+username)
+    isEmpty = True
+    for dir_in_user in dirs_in_user:
+        isEmpty = False
+        if os.path.isdir(path+username+'\\'+dir_in_user+'\\') == True and project_name == dir_in_user:
+            psth_to_project = path + username + '\\' + project_name + '\\'
+            os.chdir(psth_to_project)
+            f = open('stack.txt', 'rb')
+            stack = pickle.load(f)
+            print('Проект ', project_name, 'был изменён', stack[num]['date-time'], 'пользователем', stack[num]['user'])
+            f.close()
+            return stack[num]['date-time']
+
+    if isEmpty:
+        print('В VCS ещё не зарегистрирован ни один пользователь')
+        return
+def show_commit(username, project_name, num):
+    path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
+    dirs_in_user = os.listdir(path + username)
+    isEmpty = True
+    for dir_in_user in dirs_in_user:
+        isEmpty = False
+        if os.path.isdir(path + username + '\\' + dir_in_user + '\\') == True and project_name == dir_in_user:
+            path_to_project = path + username + '\\' + project_name + '\\'
+            os.chdir(path_to_project)
+            f = open('stack.txt', 'rb')
+            stack = pickle.load(f)
+            f.close()
+            print('Изменения в проекте', project_name, 'были сделаны ', stack[num]['date-time'])
+            print()
+            print('Изменения:')
+            print()
+            isSmthChange = False
+                for change in stack[num]['changes'][1:]:
+                    isSmthChange = True
+
+                    print(stack[num]['changes'][change][0], change)
+                    if change[0] == '+' or change[0] == '...': # Если файл добавлен или изменён
+                        if stack[num]['changes'][change][0] == '+' or stack[num]['changes'][change][0] == '-':
+                            for line_in_change in stack[num]['changes'][change][1]
+                                if line_in_change[0] == '+' or line_in_change[0] == '-'
+                                    print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
+                                else:
+                                    print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
+
+                    elif: # Если файл удалён
+                        print('-', change)
+                return stack[num]['date-time']
 
 
+        if isEmpty:
+            print('В VCS ещё не зарегистрирован ни один пользователь')
+            return
+show_commit('Ivan', 'my_new_project', 0)
+ДОБАВИТЬ ПРОВЕРКУ НА КОЛИЧЕСТВО СТРОК

@@ -1,7 +1,6 @@
 import pickle
 import variables as var
 from datetime import datetime
-import changes_in_global as chingl
 
 def make_stack(username,project_name):
 	stack = []

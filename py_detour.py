@@ -1,5 +1,7 @@
 import os
-
+def main():
+	start_detour()
+	return 0
 def go_in(new_directory):
 	os.chdir(os.getcwd()+'/'+new_directory)
 def go_up():
@@ -25,3 +27,6 @@ def start_detour():
 			mass_files.append(i)
 	return mass_files
 
+if __name__ == "__main__":
+	main()
+	

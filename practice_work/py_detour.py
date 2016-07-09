@@ -1,5 +1,7 @@
 import os
-
+def main():
+	start_detour()
+	return 0
 def go_in(new_directory):
 	os.chdir(os.getcwd()+'\\'+new_directory)
 def go_up():
@@ -19,3 +21,6 @@ def start_detour():
                         go_up()
                 else:
                         print(i)
+
+if __name__ == "__main__":
+	main()

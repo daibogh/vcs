@@ -20,11 +20,17 @@ def global_changes(user_name, project_name):
 			changes[glob_files[i]]=["-",]
 
 	for i in range(len(loc_files)):
-		print(loc_files[i])
 		if loc_files[i] in [ ".DS_Store","stack.txt"]:
 			continue
 		if loc_files[i] not in glob_files:
-			changes[loc_files[i]]=["+",]
+			new_lines = {}
+			f = open(loc_files[i],"r")
+			j = 0
+			for line in f:
+				j+=1
+				new_lines[j] = ["+",line,]
+			f.close()
+			changes[loc_files[i]]=["+",new_lines]
 		elif len(fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])):
 				changes[loc_files[i]]=["...",fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])]
 	return(changes)

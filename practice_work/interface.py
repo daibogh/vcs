@@ -1,5 +1,7 @@
 import variables as var
 import user_commands as uc
+import overwriting_files as of
+import stack_commands as sc
 import os
 def helpme():
 	f = open(var.global_destination+'/bin/help.txt','r')
@@ -47,9 +49,13 @@ dict_command = {
 	'del_file':del_file,
 	'get_status':get_status,
 	'logout':logout,
-	"make project":mk_prjct
+	"make project":mk_prjct,
+	"push":of.push
 }
-
+def pre_push(username,project_name):
+	local_stack = sc.load_l(username,project_name)
+	global_stack = sc.load_g(project_name)
+	of.push(local_stack,global_stack)
 
 def interface(username):
 	print("выберите команду(чтобы узнать список команд, наберите help)")
@@ -67,6 +73,8 @@ def interface(username):
 				print("у вас нет такого проекта")
 		elif command == "commit":
 			commit(username,project_name)
+		elif command == "push":
+			pre_push(username,project_name)
 		elif dict_command.get(command) != None and command != 'logout':
 			dict_command[command](username)
 		elif command == 'logout':

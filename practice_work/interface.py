@@ -30,16 +30,16 @@ dict_command = {
 }
 
 #import commands
-def interface(user):
-	print("выберите команду(чтобы узнать список команд, наберите help)")
-	print('>>', end=' ')
-	while True:
-		command = input()
-		if dict_command.get(command) != None:
-			dict_command[command]()
-		else:
-			print('Такой команды нет. Пожалуйста, повторите ввод.')
-			help()
-		if command == 'exit':
-			break
-		print('>>', end=' ')
+# def interface(user):
+# 	print("выберите команду(чтобы узнать список команд, наберите help)")
+# 	print('>>', end=' ')
+# 	while True:
+# 		command = input()
+# 		if dict_command.get(command) != None:
+# 			dict_command[command]()
+# 		else:
+# 			print('Такой команды нет. Пожалуйста, повторите ввод.')
+# 			help()
+# 		if command == 'exit':
+# 			break
+# 		print('>>', end=' ')

@@ -3,7 +3,7 @@ import getpass
 import os
 import variables as var
 try:
-	f = open(var.administration+"users.txt",'rb')
+	f = open(var.administration+"/users.txt",'rb')
 	users = pickle.load(f)
 	f.close()
 except:
@@ -20,8 +20,8 @@ def registration_form():
 		else:
 			print("пароли не совпадают, введите заново\n")
 	users[new_username] = password
-	os.mkdir(var.users_destination+new_username)
-	f = open(var.administration+"users.txt","wb")
+	os.mkdir(var.users_destination+"/"+new_username)
+	f = open(var.administration+"/users.txt","wb")
 	pickle.dump(users,f)
 	f.close()
 
@@ -42,10 +42,10 @@ def login():
 		current_password = getpass.getpass("введите пароль: ")
 		if current_password == users[current_username]:
 			try:
-				os.chdir(var.users_destination + current_username+"/")
+				os.chdir(var.users_destination + "/"+current_username+"/")
 			except:
-				os.mkdir(var.users_destination + current_username+"/")
-				os.chdir(var.users_destination + current_username+"/")
+				os.mkdir(var.users_destination + "/"+current_username+"/")
+				os.chdir(var.users_destination + "/"+current_username+"/")
 			print(os.getcwd())
 			print("ok")
 			break

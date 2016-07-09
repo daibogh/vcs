@@ -4,6 +4,7 @@ import variables as var
 import stack_commands as sc
 import py_detour as py_dtour
 import find_changes as find_ch
+import changes_in_global as chingl
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)

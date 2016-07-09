@@ -5,6 +5,7 @@ import stack_commands as sc
 import py_detour as py_dtour
 import find_changes as find_ch
 import changes_in_global as chingl
+from datetime import datetime
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)
@@ -13,6 +14,7 @@ import changes_in_global as chingl
 # 	f.close()
 # 
 def commit(username,project_name):
+	check = check_updates(username,project_name)
 	element = {}
 	element["user"] = username
 	element["date-time"] = datetime.now()
@@ -20,10 +22,11 @@ def commit(username,project_name):
 	if element["changes"]=={}:
 		print("Не было внесено никаких изменений")
 		return
-	path_to_stack = var.users_destination+"stack.txt"
+	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
 	f = open(path_to_stack,"rb")
 	stack = pickle.load(f)
 	stack.append(element)
+	f = open(path_to_stack,"wb")
 	pickle.dump(stack,f)
 	f.close()
 
@@ -143,7 +146,7 @@ def show_com_date_time(username, project_name, num):
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
 		isEmpty = False
-		if os.path.isdir(var.users_destination+username'/'dir_in_user'/' == True and project_name == dir_in_user:
+		if os.path.isdir(var.users_destination+username+'/'+dir_in_user+'/') == True and project_name == dir_in_user:
 			path_to_project = var.users_destination + username + '/' + project_name + '/'
 			os.chdir(path_to_project)
 			f = open('stack.txt', 'rb')
@@ -182,12 +185,13 @@ def show_commit(username, project_name, num):
                         if line_in_change[0] == '+' or line_in_change[0] == '-':
                             print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
                         else:
-                            print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
+                        	print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
             else:	# Если файл удалён
                 print('-', change)
     else:
-    	if not os.path.exists(var.users_destination + username + '/'):
-        	print('В VCS нет пользователя', username)
+        if not os.path.exists(var.users_destination + username + '/'):
+            print('В VCS нет пользователя', username)
         else:
-        	print('У пользователя', username, 'нет проекта с именем', project_name)
+            print('У пользователя', username, 'нет проекта с именем', project_name)
+
         return

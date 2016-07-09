@@ -14,4 +14,9 @@ def users_interface():
 		elif input("Вы хотите выйти из системы?(д/н) ").lower() in ["yes","да","y","д"]:
 			sys.exit()
 
-users_interface()
+def main():
+	users_interface()
+
+
+if "__name__" == "__main__":
+	main()

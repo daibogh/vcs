@@ -9,7 +9,7 @@ def main():
 
 def global_changes(user_name, project_name):
 	changes={}
-	gl_dest=var.global_destination+"/"+user_name+"/"+project_name
+	gl_dest=var.global_destination+"/"+project_name
 	os.chdir(gl_dest)
 	glob_files=dt.start_detour()
 	lc_dest=var.users_destination+"/"+user_name+"/"+project_name
@@ -20,6 +20,9 @@ def global_changes(user_name, project_name):
 			changes[glob_files[i]]=["-",]
 
 	for i in range(len(loc_files)):
+		print(loc_files[i])
+		if loc_files[i] in [ ".DS_Store","stack.txt"]:
+			continue
 		if loc_files[i] not in glob_files:
 			changes[loc_files[i]]=["+",]
 		elif len(fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])):

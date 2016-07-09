@@ -14,7 +14,7 @@ from datetime import datetime
 # 	f.close()
 # 
 def commit(username,project_name):
-	check = check_updates(username,project_name)
+	# check = check_updates(username,project_name)
 	element = {}
 	element["user"] = username
 	element["date-time"] = datetime.now()

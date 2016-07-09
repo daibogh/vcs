@@ -1,22 +1,25 @@
 import os
 import variables as var
-def push(local_stack,global_stack):
+import stack_commands as sc
+def push(local_stack,global_stack,project_name):
 	temp_stack = []
 	for element in reversed(local_stack):
 		if element not in global_stack:
 			temp_stack.append(element)
 		else:
 			break
-	for element in temp_stack:
+	while temp_stack:
+		element = temp_stack.pop()
 		changes = element["changes"]
 		for path in changes.keys():
 			if changes[path][0] == "...":
-				overwrite_file(var.global_destination+"/"+path,changes[path][-1])
+				overwrite_file(var.global_destination + path,changes[path][-1])
 			elif changes[path][0] == "+":
-				write_file(var.global_destination+"/"+path,changes[path][-1])
+				write_file(var.global_destination + "/" + path,changes[path][-1])
 			elif changes[path][0] == "-":
-				os.remove(global_destination+"/"+path)
-def pull(local_stack,global_stack,username):
+				os.remove(var.global_destination + "/" + path)
+	sc.dump_g(project_name,global_stack)
+def pull(local_stack,global_stack,username,project_name):
 	temp_stack = []
 	for element in reversed(global_stack):
 		if element not in local_stack:
@@ -31,15 +34,19 @@ def pull(local_stack,global_stack,username):
 			elif changes[path][0] == "+":
 				write_file(var.users_destination+"/"+path,changes[path][-1])
 			elif changes[path][0] == "-":
-				os.remove(path)
+				os.remove(var.users_destination+"/"+path)
 def write_file(path,changes):
+	
 	f = open(path,"w")
 	for i in changes.keys():
 		f.write(changes[i][-1])
 
 def overwrite_file(path,changes):
-	f = open(path,"r")
-	mass = [line for line in f]
+	print(changes)
+	print("path",path)
+	g = open(path,"r")
+	mass = [line for line in g]
+	g.close()
 	temp = {i:mass[i] for i in range(len(mass))}
 	for num in changes.keys():
 		if changes[num][0] == "...":
@@ -48,8 +55,18 @@ def overwrite_file(path,changes):
 			temp[num] = changes[num][-1]
 		elif changes[num][0] == "-":
 			temp[num] = "\n"
+	print(temp)
 	os.remove(path)
 	f = open(path,"w")
-	for num in temp.keys():
-		f.write(temp[num])
+	f.seek(0)
+	f.truncate()
+	f.seek(0)
 	f.close()
+	f = open(path,"w")
+	for num in sorted(temp.keys()):
+		f.write(temp[num])
+		# print(num,temp[num],sep = "===")
+	f.close()
+	f = open(path,"r")
+	for line in f:
+		print(line)

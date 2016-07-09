@@ -55,7 +55,7 @@ dict_command = {
 def pre_push(username,project_name):
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
-	of.push(local_stack,global_stack)
+	of.push(local_stack,global_stack,project_name)
 
 def interface(username):
 	print("выберите команду(чтобы узнать список команд, наберите help)")

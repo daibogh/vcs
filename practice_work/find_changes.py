@@ -1,6 +1,4 @@
 def changes_lines(old_file, new_file):
-	if "stack.txt" in old_file:
-		return
 	mass_of_changes={}
 	oldFile=open(old_file,'r')
 	newFile=open(new_file,'r')

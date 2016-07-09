@@ -1,23 +1,63 @@
 import os
 import pickle
 
+# def commit(username):
+# 	stack = get_stack()
+# 	stack.append(updates)
+# 	f = open("stack.txt","wb")
+# 	pickle.dump(stack,f)
+# 	f.close()
+# 
 
-def commit(username):
-	stack = get_stack()
-	stack.append(updates)
-	f = open("stack.txt","wb")
-	pickle.dump(stack,f)
-	f.close()
+def check_updates(username,project_name):
+	global_stack = sc.load_g(project_name)
+	
+	local_stack = sc.load_l(username,project_name)
+	if len(global_stack)>len(local_stack):
+		return False
+	elif global_stack[-1] in local_stack:
+		return True
+	else:
+		return False
 
 
 
-def push(username):
+
+def push(username,project_name):
 	check = check_updates()
 	if check:
-		f = open(var.global_destination+project_name+"/stack.txt","rb")
-		global_stack = pickle.load(f)
+		global_stack = sc.load_g(project_name)
+		local_stack = sc.load_l(username,project_name)
+
+
+
+		list_of_changes = []
+		for stack_element in reversed(local_stack):
+			if stack_element not in global_stack:
+				list_of_changes.append(stack_element)
+			else:
+				break
+		while len(list_of_changes)!=0:
+			global_stack.append(list_of_changes.pop())
+		f = open(var.global_destination+project_name+"/stack.txt","wb")
+		pickle.dump(global_stack,f)
 		f.close()
-		f = open()
+
+
+def del_last_commit(username,project_name):
+	global_stack = sc.load_g(project_name)
+	local_stack = sc.load_l(username, project_name)
+	if local_stack in global_stack:
+		print("невозможно удалить последний коммит, обратитесь к администратору")
+		return
+	else:
+		print("вы уверены, что хотите удалить последний коммит?(д/н)")
+		if input().lower() in ["да","д","yes","y"]:
+			local_stack = local_stack[:-1]
+			sc.dump_l(username,project_name,local_stack)
+			print("удаление прошло успешно")
+			return 0
+
 
 
 
@@ -37,7 +77,7 @@ def make_project(username,project_name):
 					# shutil.rmtree('/folder_name')
 					shutil.rmtree(var.global_destination+project_name)
 					try:
-						shutil.rmtree(var.users_destination+"/"+username+"/"+project_name)
+						shutil.rmtree(var.users_destination+"/"+username+"/"+project_name+"/")
 						make_project(username,project_name)
 						return 0
 					except:

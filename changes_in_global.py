@@ -26,5 +26,5 @@ def global_changes(user_name, project_name):
 				changes[loc_files[i]]=["...",fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])]
 	print(changes)
 			
-if __name__ == "__main__":
+if "__name__" == "__main__":
 	main()

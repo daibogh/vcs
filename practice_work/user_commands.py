@@ -11,6 +11,20 @@ import find_changes as find_ch
 # 	pickle.dump(stack,f)
 # 	f.close()
 # 
+def commit(username,project_name):
+	element = {}
+	element["user"] = username
+	element["date-time"] = datetime.now()
+	element["changes"]=chingl.global_changes(username,project_name)
+	if element["changes"]=={}:
+		print("Не было внесено никаких изменений")
+		return
+	path_to_stack = var.users_destination+"stack.txt"
+	f = open(path_to_stack,"rb")
+	stack = pickle.load(f)
+	stack.append(element)
+	pickle.dump(stack,f)
+	f.close()
 
 def check_updates(username,project_name):
 	global_stack = sc.load_g(project_name)

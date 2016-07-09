@@ -27,6 +27,5 @@ def start_detour():
 			mass_files.append(i)
 	return mass_files
 
-if __name__ == "__main__":
+if "__name__" == "__main__":
 	main()
-	

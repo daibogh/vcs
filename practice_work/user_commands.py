@@ -1,6 +1,9 @@
 import os
 import pickle
-
+import variables as var
+import stack_commands as sc
+import py_detour as py_dtour
+import find_changes as find_ch
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)
@@ -105,14 +108,13 @@ def make_project(username,project_name):
 	return 0
     
 def show_com_username(username, project_name, num):
-	path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
-	dirs_in_user = os.listdir(path+username)
+	dirs_in_user = os.listdir(var.users_destination+username)
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
 		isEmpty = False
-		if os.path.isdir(path+username+'\\'+dir_in_user+'\\') == True and project_name == dir_in_user:
-			psth_to_project = path + username + '\\' + project_name + '\\'
-			os.chdir(psth_to_project)
+		if os.path.isdir(var.users_destination+username+'/'+dir_in_user+'/') == True and project_name == dir_in_user:
+			path_to_project = var.users_destination + username + '/' + project_name + '/'
+			os.chdir(path_to_project)
 			f = open('stack.txt', 'rb')
 			stack = pickle.load(f)
 			print('Изменения в проекте', project_name, 'были сделаны пользователем', stack[num]['user'])
@@ -122,14 +124,13 @@ def show_com_username(username, project_name, num):
 		print('В VCS ещё не зарегистрирован ни один пользователь')
 		return
 def show_com_date_time(username, project_name, num):
-	path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
-	dirs_in_user = os.listdir(path+username)
+	dirs_in_user = os.listdir(var.users_destination+username)
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
 		isEmpty = False
-		if os.path.isdir(path+username+'\\'+dir_in_user+'\\') == True and project_name == dir_in_user:
-			psth_to_project = path + username + '\\' + project_name + '\\'
-			os.chdir(psth_to_project)
+		if os.path.isdir(var.users_destination+username'/'dir_in_user'/' == True and project_name == dir_in_user:
+			path_to_project = var.users_destination + username + '/' + project_name + '/'
+			os.chdir(path_to_project)
 			f = open('stack.txt', 'rb')
 			stack = pickle.load(f)
 			print('Проект ', project_name, 'был изменён', stack[num]['date-time'], 'пользователем', stack[num]['user'])
@@ -139,42 +140,39 @@ def show_com_date_time(username, project_name, num):
 		print('В VCS ещё не зарегистрирован ни один пользователь')
 		return
 def show_commit(username, project_name, num):
-    path = 'C:\\Users\\User\\Desktop\\Project\\local\\'
-    dirs_in_user = os.listdir(path + username)
-    isEmpty = True
-    for dir_in_user in dirs_in_user:
-        isEmpty = False
-        if os.path.isdir(path + username + '\\' + dir_in_user + '\\') == True and project_name == dir_in_user:
-            path_to_project = path + username + '\\' + project_name + '\\'
-            os.chdir(path_to_project)
-            f = open('stack.txt', 'rb')
-            stack = pickle.load(f)
-            f.close()
-            if len(stack) < num:
-                print('Коммита с таким номров нет!')
-                return
-            elif len(stack) == 1:
-                print('Коммит пуст!')
-                return
-            print('Изменения в проекте', project_name, 'были сделаны ', stack[num]['date-time'])
-            print()
-            print('Изменения:')
-            print()
-            isSmthChange = False
-            for change in stack[num]['changes']: # ['changes'][1:] -> Error: unhashable type: 'slice'
-                isSmthChange = True
-                print(stack[num]['changes'][change][0], change)
-                if change[0] == '+' or change[0] == '...': # Если файл добавлен или изменён
-                    if stack[num]['changes'][change][0] == '+' or stack[num]['changes'][change][0] == '-':
-                        for line_in_change in stack[num]['changes'][change][1]:
-                            if line_in_change[0] == '+' or line_in_change[0] == '-':
-                                print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
-                            else:
-                                print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
-                else:	# Если файл удалён
-                    print('-', change)
-        if isEmpty:
-            print('В VCS ещё не зарегистрирован ни один пользователь')
+    dirs_in_user = os.listdir(var.users_destination + username)
+    if os.path.exists(var.users_destination + username + '/' + project_name + '/'):
+        path_to_project = var.users_destination + username + '/' + project_name + '/'
+        os.chdir(path_to_project)
+        f = open('stack.txt', 'rb')
+        stack = pickle.load(f)
+        f.close()
+        if len(stack) < num:
+            print('Коммита с таким номров нет!')
             return
-
-show_commit('Ivan', 'my_new_project', 0)
+        elif len(stack) == 1:
+            print('Коммит пуст!')
+            return
+        print('Изменения в проекте', project_name, 'были сделаны ', stack[num]['date-time'])
+        print()
+        print('Изменения:')
+        print()
+        isSmthChange = False
+        for change in stack[num]['changes']: # ['changes'][1:] -> Error: unhashable type: 'slice'
+            isSmthChange = True
+            print(stack[num]['changes'][change][0], change)
+            if change[0] == '+' or change[0] == '...': # Если файл добавлен или изменён
+                if stack[num]['changes'][change][0] == '+' or stack[num]['changes'][change][0] == '-':
+                    for line_in_change in stack[num]['changes'][change][1]:
+                        if line_in_change[0] == '+' or line_in_change[0] == '-':
+                            print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
+                        else:
+                            print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
+            else:	# Если файл удалён
+                print('-', change)
+    else:
+    	if not os.path.exists(var.users_destination + username + '/'):
+        	print('В VCS нет пользователя', username)
+        else:
+        	print('У пользователя', username, 'нет проекта с именем', project_name)
+        return

@@ -1,4 +1,5 @@
 import os
+import os.path
 import variables as var
 import stack_commands as sc
 def push(local_stack,global_stack,project_name):
@@ -36,15 +37,38 @@ def pull(local_stack,global_stack,username,project_name):
 			elif changes[path][0] == "-":
 				os.remove(var.users_destination+"/"+path)
 def write_file(path,changes):
-	
-	f = open(path,"w")
+	try:
+		f = open(path,"w")
+	except:
+		temp = path.split("/")[:-1]
+		_dir2 = ""
+		for _dir in temp:
+			_dir2 += "/"+_dir+"/"
+			if os.path.exists(_dir2):
+				pass
+			else:
+				os.mkdir(_dir2)
+		f = open(path,"w")
+		
 	for i in changes.keys():
 		f.write(changes[i][-1])
 
 def overwrite_file(path,changes):
 	print(changes)
 	print("path",path)
-	g = open(path,"r")
+	try:
+		g = open(path,"r")
+	except:
+		temp = path.split("/")[:-1]
+		_dir2 = ""
+		for _dir in temp:
+			_dir2 += "/"+_dir+"/"
+			if os.path.exists(_dir2):
+				pass
+			else:
+				os.mkdir(_dir2)
+		g = open(path,"r")
+	# g = open(path,"r")
 	mass = [line for line in g]
 	g.close()
 	temp = {i:mass[i] for i in range(len(mass))}

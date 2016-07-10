@@ -166,7 +166,7 @@ def show_commit(username, project_name, num):
         stack = pickle.load(f)
         f.close()
         if len(stack) < num:
-            print('Коммита с таким номров нет!')
+            print('Коммита с таким номером нет!')
             return
         elif len(stack) == 1:
             print('Коммит пуст!')
@@ -195,3 +195,24 @@ def show_commit(username, project_name, num):
             print('У пользователя', username, 'нет проекта с именем', project_name)
 
         return
+
+def show_not_pushed(username,project_name):
+	global_stack = sc.load_g(project_name)
+	local_stack = sc.load_l(username,project_name)
+	list_of_changes = []
+	for stack_element in reversed(local_stack):
+		if stack_element not in global_stack:
+			list_of_changes.append(stack_element)
+		else:
+			break
+	print(list_of_changes)
+	return list_of_changes
+
+def del_couple_commits(username,project_name):
+	local_stack = sc.load_l(username,project_name)
+	list_of_changes = show_not_pushed(username,project_name)
+	pushed_commits = []
+	for stack_element in reversed(local_stack):
+		if stack_element not in list_of_changes:
+			pushed_commits.append(stack_element)
+	sc.dump_l(username,project_name,pushed_commits)

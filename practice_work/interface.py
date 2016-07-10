@@ -46,6 +46,7 @@ dict_command = {
 	'set_file':set_file,
 	'add':add,
 	'commit':commit,
+	'del_last_commit':del_last_commit,
 	'del_in_index':del_in_index,
 	'del_file':del_file,
 	'get_status':get_status,
@@ -57,7 +58,19 @@ def pre_push(username,project_name):
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
-
+def del_last_commit(username, project_name):
+    global_stack = sc.load_g(project_name)
+    local_stack = sc.load_l(username, project_name)
+    if local_stack in global_stack:
+        print("невозможно удалить последний коммит, обратитесь к администратору")
+        return
+    else:
+        print("вы уверены, что хотите удалить последний коммит?(д/н)")
+        if input().lower() in ["да", "д", "yes", "y"]:
+            local_stack = local_stack[:-1]
+            sc.dump_l(username, project_name, local_stack)
+            print("удаление прошло успешно")
+            return 0
 def interface(username):
 	print("выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
@@ -82,6 +95,8 @@ def interface(username):
 				log.log(project_name," ".join(command.split()[1:]))
 			else:
 				log.log(project_name,"simple")
+		elif 'del_last_commit' in command:
+			del_last_commit(username, project_name)
 		elif dict_command.get(command) != None and command != 'logout':
 			dict_command[command](username)
 		elif command == 'logout':

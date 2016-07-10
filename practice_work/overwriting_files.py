@@ -11,6 +11,7 @@ def push(local_stack,global_stack,project_name):
 			break
 	while temp_stack:
 		element = temp_stack.pop()
+		global_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
 			if changes[path][0] == "...":
@@ -81,6 +82,7 @@ def overwrite_file(path,changes):
 			temp[num] = "\n"
 	print(temp)
 	os.remove(path)
+	print(os.listdir())
 	f = open(path,"w")
 	f.seek(0)
 	f.truncate()

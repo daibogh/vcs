@@ -2,6 +2,7 @@ import os
 import os.path
 import variables as var
 import stack_commands as sc
+import changes_in_local as chinlc
 def push(local_stack,global_stack,project_name):
 	temp_stack = []
 	for element in reversed(local_stack):
@@ -15,28 +16,22 @@ def push(local_stack,global_stack,project_name):
 		changes = element["changes"]
 		for path in changes.keys():
 			if changes[path][0] == "...":
-				overwrite_file(var.global_destination + path,changes[path][-1])
+				overwrite_file(var.global_destination + "/" + path,changes[path][-1])
 			elif changes[path][0] == "+":
 				write_file(var.global_destination + "/" + path,changes[path][-1])
 			elif changes[path][0] == "-":
-				os.remove(var.global_destination + "/" + path)
+				os.remove(var.global_destination + "/" + project_name + "/" + path)
 	sc.dump_g(project_name,global_stack)
-def pull(local_stack,global_stack,username,project_name):
-	temp_stack = []
-	for element in reversed(global_stack):
-		if element not in local_stack:
-			temp_stack.append(element)
-		else:
-			break
-	for element in temp_stack:
-		changes = element["changes"]
-		for path in changes.keys():
-			if changes[path][0] == "...":
-				overwrite_file(var.users_destination+"/"+username+"/"+path,changes[path][-1])
-			elif changes[path][0] == "+":
-				write_file(var.users_destination+"/"+path,changes[path][-1])
-			elif changes[path][0] == "-":
-				os.remove(var.users_destination+"/"+path)
+def pull(username,project_name):
+	changes={}
+	changes = chinlc.local_changes(username,project_name)
+	for path in changes.keys():
+		if changes[path][0] == "...":
+			overwrite_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
+		elif changes[path][0] == "+":
+			write_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
+		elif changes[path][0] == "-":
+			os.remove(var.users_destination+"/"+username+"/"+ project_name+"/"+ path)
 def write_file(path,changes):
 	try:
 		f = open(path,"w")

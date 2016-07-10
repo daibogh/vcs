@@ -140,6 +140,7 @@ def pre_push(username,project_name):
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
 
+
 def del_last_commit(username, project_name):
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
@@ -153,25 +154,6 @@ def del_last_commit(username, project_name):
             sc.dump_l(username, project_name, local_stack)
             print("удаление прошло успешно")
             return 0
-
-dict_command = {
-	'help':helpme,
-	'show_prjs':show_prjs,
-	'set_prj':set_prj,
-	'add_prj':add_prj,
-	'set_ver':set_ver,
-	'set_file':set_file,
-	'add':add,
-	'commit':commit,
-	'del_last_commit':del_last_commit,
-	'del_in_index':del_in_index,
-	'del_file':del_file,
-	'get_status':get_status,
-	'exit':exit,
-	"make project":mk_prjct,
-	"push":of.push
-}
-
 
 def interface(username):
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
@@ -221,7 +203,8 @@ def interface(username):
 				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')
 		elif command == "push":
 			pre_push(username,project_name)
-
+		elif command == "update":
+			of.pull(username,project_name)
 		elif "log" in command:
 			if len(command.split()) > 1:
 				log.log(project_name," ".join(command.split()[1:]))
@@ -229,11 +212,12 @@ def interface(username):
 				log.log(project_name,"simple")
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
+
 		elif dict_command.get(command) != None and command != 'exit':
 			dict_command[command](username)
 		elif command == 'exit':
 			if dict_command[command](username):
-				return	
+				return
 		else:
 			print('Такой команды нет. Пожалуйста, повторите ввод.')
 			helpme()		

@@ -38,8 +38,6 @@ def exit(username):
 		return True
 	else:
 		return False
-<<<<<<< HEAD
-=======
 def del_last_commit(username, project_name):
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
@@ -53,7 +51,6 @@ def del_last_commit(username, project_name):
             sc.dump_l(username, project_name, local_stack)
             print("удаление прошло успешно")
             return 0
-
 
 dict_command = {
 	'help':helpme,
@@ -72,12 +69,12 @@ dict_command = {
 	"make project":mk_prjct,
 	"push":of.push
 }
->>>>>>> origin/master
+
 def pre_push(username,project_name):
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
-<<<<<<< HEAD
+
 def del_last_commit(username, project_name):
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
@@ -109,8 +106,7 @@ dict_command = {
 	"make project":mk_prjct,
 	"push":of.push
 }
-=======
->>>>>>> origin/master
+
 
 def interface(username):
 	print("Выберите команду(чтобы узнать список команд, наберите help)")

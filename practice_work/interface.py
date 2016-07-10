@@ -3,6 +3,7 @@ import user_commands as uc
 import overwriting_files as of
 import stack_commands as sc
 import os
+import log
 def helpme():
 	f = open(var.global_destination+'/bin/help.txt','r')
 	for line in f:
@@ -75,6 +76,12 @@ def interface(username):
 			commit(username,project_name)
 		elif command == "push":
 			pre_push(username,project_name)
+
+		elif "log" in command:
+			if len(command.split()) > 1:
+				log.log(project_name," ".join(command.split()[1:]))
+			else:
+				log.log(project_name,"simple")
 		elif dict_command.get(command) != None and command != 'logout':
 			dict_command[command](username)
 		elif command == 'logout':

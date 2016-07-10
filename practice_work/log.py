@@ -6,6 +6,13 @@ def pre_log(project_name):
 
 def log(project_name, argument):
 	global_stack  = sc.load_g(project_name)
+	if argument == "simple":
+		for commit in global_stack:
+			print("#####################################################################")
+			print(commit["date-time"])
+			for element in commit["changes"].keys():
+				print(commit["changes"][element][0],element,sep = " --- ")
+			print("#####################################################################")
 	if argument == "--name-only":
 		for commit in global_stack:
 			print("#####################################################################")

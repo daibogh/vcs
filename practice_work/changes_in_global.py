@@ -32,7 +32,7 @@ def global_changes(user_name, project_name):
 				j+=1
 				new_lines[j] = ["+",line,]
 			f.close()
-			path = project_name + os.getcwd().split(project_name)[-1][1:]
+			path = project_name + "/"+ os.getcwd().split(project_name)[-1]
 			changes[path+loc_files[i]]=["+",new_lines]
 		elif len(fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])):
 			path = project_name + "/" + os.getcwd().split(project_name)[-1]

@@ -16,9 +16,9 @@ def changes_lines(old_file, new_file):
 					
 	for i in range(maxlen):
 		if arr1[i]!=arr2[i]:
-			if arr1[i]=='\n':
+			if arr1[i]=='':
 				mass_of_changes[i+1]=["+",arr2[i]]
-			elif arr2[i]=='\n':
+			elif arr2[i]=='':
 					mass_of_changes[i+1]=['-',arr1[i]]
 			else:
 				mass_of_changes[i+1]=["...",arr1[i], arr2[i]]

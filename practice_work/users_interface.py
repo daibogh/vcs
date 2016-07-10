@@ -7,7 +7,7 @@ def users_interface():
 	print("Добро пожаловать в наш VCS.")
 	while 1:
 		username=si.login()
-		print("Вы авторизировались как "+username+".")
+		print("Вы авторизировались как </"+username+"/>.")
 		intf.interface(username)
 		if input("Вы хотите сменить пользователя?(д/н) ").lower() in ["yes","да","y","д"]:
 			continue

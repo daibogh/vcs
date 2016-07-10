@@ -30,30 +30,14 @@ def del_file():
 def get_status():
 	return
 def mk_prjct(username):
-	uc.make_project(username,input("введите название создаваемого проекта\n"))
-def logout(username):
+	prj_name=input("введите название создаваемого проекта\n>> ")
+	uc.make_project(username,prj_name)
+	return prj_name
+def exit(username):
 	if input("Вы уверены, что хотите выйти из текущей сессии пользователя </"+username+"/>?(д/н) ").lower() in ["yes","да","y","д"]:
 		return True
 	else:
 		return False
-
-dict_command = {
-	'help':helpme,
-	'show_prjs':show_prjs,
-	'set_prj':set_prj,
-	'add_prj':add_prj,
-	'set_ver':set_ver,
-	'set_file':set_file,
-	'add':add,
-	'commit':commit,
-	'del_last_commit':del_last_commit,
-	'del_in_index':del_in_index,
-	'del_file':del_file,
-	'get_status':get_status,
-	'logout':logout,
-	"make project":mk_prjct,
-	"push":of.push
-}
 def pre_push(username,project_name):
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
@@ -71,20 +55,62 @@ def del_last_commit(username, project_name):
             sc.dump_l(username, project_name, local_stack)
             print("удаление прошло успешно")
             return 0
+
+dict_command = {
+	'help':helpme,
+	'show_prjs':show_prjs,
+	'set_prj':set_prj,
+	'add_prj':add_prj,
+	'set_ver':set_ver,
+	'set_file':set_file,
+	'add':add,
+	'commit':commit,
+	'del_last_commit':del_last_commit,
+	'del_in_index':del_in_index,
+	'del_file':del_file,
+	'get_status':get_status,
+	'exit':exit,
+	"make project":mk_prjct,
+	"push":of.push
+}
+
 def interface(username):
-	print("выберите команду(чтобы узнать список команд, наберите help)")
+	print("Выберите команду(чтобы узнать список команд, наберите help)")
+	print("Для начала выберите проект или создайте новый")
+	while 1:
+		command=input("введите название проекта\n>> ")
+		if command != "exit":
+			project_name=command
+			os.chdir(var.users_destination+"/"+username+"/")
+			prj_list = os.listdir()
+			if project_name in prj_list:
+				break
+			else:
+				print("у вас нет такого проекта")
+				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
+					project_name=mk_prjct(username)
+					break
+		elif command == 'exit':
+			if dict_command[command](username):
+				return
+	print("Вы выбрали проект </"+project_name+"/>")		
+	print("Выберите команду(чтобы узнать список команд, наберите help)")				
 	while 1:
 		command = input(">> ")
 		if command == "make project":
-			mk_prjct(username)
+			project_name=mk_prjct(username)
+			print("Вы выбрали проект </"+project_name+"/>")	
 		elif command == "set project":
 			project_name = input("введите название проекта\n")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
-				pass
+				print("Вы выбрали проект </"+project_name+"/>")	
 			else:
 				print("у вас нет такого проекта")
+				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
+					project_name=mk_prjct(username)	
+					print("Вы выбрали проект </"+project_name+"/>")		
 		elif command == "commit":
 			commit(username,project_name)
 		elif command == "push":
@@ -97,15 +123,14 @@ def interface(username):
 				log.log(project_name,"simple")
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
-		elif dict_command.get(command) != None and command != 'logout':
+		elif dict_command.get(command) != None and command != 'exit':
 			dict_command[command](username)
-		elif command == 'logout':
+		elif command == 'exit':
 			if dict_command[command](username):
 				return	
 		else:
 			print('Такой команды нет. Пожалуйста, повторите ввод.')
-			helpme()
-
+			helpme()		
 #import commands
 # def interface(user):
 # 	print("выберите команду(чтобы узнать список команд, наберите help)")

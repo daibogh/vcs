@@ -4,8 +4,13 @@ import overwriting_files as of
 import stack_commands as sc
 import os
 import log
+import pickle
+import py_detour as py_dtour
+import find_changes as find_ch
+import changes_in_global as chingl
+from datetime import datetime
 def helpme():
-	f = open(var.global_destination+'/bin/help.txt','r')
+	f = open(var.global_destination + '/bin/help.txt', 'r')
 	for line in f:
 		print(line)
 	f.close()	
@@ -38,6 +43,66 @@ def exit(username):
 		return True
 	else:
 		return False
+def commit(username,project_name):
+	# check = check_updates(username,project_name)
+	element = {}
+	element["user"] = username
+	element["date-time"] = datetime.now()
+	element["changes"]=chingl.global_changes(username,project_name)
+	if element["changes"]=={}:
+		print("Не было внесено никаких изменений")
+		return
+	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
+	f = open(path_to_stack,"rb")
+	stack = pickle.load(f)
+	stack.append(element)
+	f = open(path_to_stack,"wb")
+	pickle.dump(stack,f)
+	f.close()
+def what_to_commit(username, project_name):
+    os.chdir(var.users_destination + username + '/' + project_name)
+    f = open('stack.txt','rb')
+    stack = pickle.load(f)
+    f.close()
+    print('Список изменённых файлов')
+    kk = 1
+    for changed_file in stack[-1]['changes'].keys():
+        k = 0
+        for i in reversed(changed_file):  # reversed(changed_file):
+            k -= 1
+            if i == '/':
+                print(str(kk)+':',changed_file[(k+1):], '\tпуть:', changed_file)
+                kk += 1
+                break
+    print('Введите через пробел номера файлов, которые вы хотите закоммитить:')
+    file_numbers = [int(i) for i in input('> ').split()]
+    print('Ваш выбор:')
+    k = 0
+    for changed_file in stack[-1]['changes'].keys():
+        k += 1
+        if k in file_numbers:
+            print(changed_file)
+    print('Введите 1 для продолжения, или 0 для отмены: ', end='')
+    choice = int(input())
+    if choice:
+        m = 0
+        while len(file_numbers) != m:
+            k = 0
+            for changed_file in stack[-1]['changes'].keys():
+                k += 1
+                if k in file_numbers:
+                    file_to_del_from_stack = changed_file
+                    break
+            del (stack[-1]['changes'][file_to_del_from_stack])
+            m += 1
+        f = open('stack.txt', 'wb')
+        pickle.dump(stack, f)
+        f.close()
+        print('Добавление коммита было успешно завершено')
+    else:
+        del_last_commit(username, project_name)
+        print('Добавление коммита было прервано')
+        return
 def del_last_commit(username, project_name):
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
@@ -65,7 +130,7 @@ dict_command = {
 	'del_in_index':del_in_index,
 	'del_file':del_file,
 	'get_status':get_status,
-	'exit':logout,
+	'exit':exit,
 	"make project":mk_prjct,
 	"push":of.push
 }
@@ -127,26 +192,33 @@ def interface(username):
 		elif command == 'exit':
 			if dict_command[command](username):
 				return
-	print("Вы выбрали проект </"+project_name+"/>")		
-	print("Выберите команду(чтобы узнать список команд, наберите help)")				
+	print("Вы выбрали проект </"+project_name+"/>")
+	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")
 		if command == "make project":
 			project_name=mk_prjct(username)
-			print("Вы выбрали проект </"+project_name+"/>")	
+			print("Вы выбрали проект </"+project_name+"/>")
 		elif command == "set project":
 			project_name = input("введите название проекта\n")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
-				print("Вы выбрали проект </"+project_name+"/>")	
+				print("Вы выбрали проект </"+project_name+"/>")
 			else:
 				print("у вас нет такого проекта")
 				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
-					project_name=mk_prjct(username)	
-					print("Вы выбрали проект </"+project_name+"/>")		
+					project_name=mk_prjct(username)
+					print("Вы выбрали проект </"+project_name+"/>")
 		elif command == "commit":
-			commit(username,project_name)
+			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
+			if choice in ["да", "д", "yes", "y"]:
+				commit(username,project_name)
+			elif choice in ['нет', 'н', 'no', 'n']:
+				commit(username,project_name)
+				what_to_commit(username, project_name)
+			else:
+				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')
 		elif command == "push":
 			pre_push(username,project_name)
 

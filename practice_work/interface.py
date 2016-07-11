@@ -139,6 +139,10 @@ def pre_push(username,project_name):
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
+def pre_pull(username,project_name):
+	local_stack = sc.load_l(username,project_name)
+	global_stack = sc.load_g(project_name)
+	of.pull(local_stack,global_stack,username,project_name)
 
 
 def del_last_commit(username, project_name):
@@ -192,6 +196,10 @@ def interface(username):
 				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
 					project_name=mk_prjct(username)
 					print("Вы выбрали проект </"+project_name+"/>")
+
+
+
+
 		elif command == "commit":
 			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
 			if choice in ["да", "д", "yes", "y"]:
@@ -201,23 +209,60 @@ def interface(username):
 				what_to_commit(username, project_name)
 			else:
 				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')
+
+
+
+
 		elif command == "push":
 			pre_push(username,project_name)
+
+
+
+
+
 		elif command == "update":
-			of.pull(username,project_name)
+			pre_pull(username,project_name)
+
+
+
+
 		elif "log" in command:
 			if len(command.split()) > 1:
 				log.log(project_name," ".join(command.split()[1:]))
 			else:
 				log.log(project_name,"simple")
+
+
+
+
+
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
 
-		elif dict_command.get(command) != None and command != 'exit':
+
+
+
+
+
+		elif dict_command.get(command) != None and command != 'exit' and command != "help":
 			dict_command[command](username)
+
+
+
+
 		elif command == 'exit':
 			if dict_command[command](username):
 				return
+
+
+
+
+		elif command == "help":
+			dict_command[command]()
+
+
+
+
 		else:
 			print('Такой команды нет. Пожалуйста, повторите ввод.')
 			helpme()		

@@ -17,24 +17,6 @@ def push(local_stack,global_stack,project_name):
 		changes = element["changes"]
 		for path in changes.keys():
 			if changes[path][0] == "...":
-<<<<<<< Updated upstream
-				overwrite_file(var.global_destination + "/" + path,changes[path][-1])
-			elif changes[path][0] == "+":
-				write_file(var.global_destination + "/" + path,changes[path][-1])
-			elif changes[path][0] == "-":
-				os.remove(var.global_destination + "/" + project_name + "/" + path)
-	sc.dump_g(project_name,global_stack)
-def pull(username,project_name):
-	changes={}
-	changes = chinlc.local_changes(username,project_name)
-	for path in changes.keys():
-		if changes[path][0] == "...":
-			overwrite_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
-		elif changes[path][0] == "+":
-			write_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
-		elif changes[path][0] == "-":
-			os.remove(var.users_destination+"/"+username+"/"+ project_name+"/"+ path)
-=======
 				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])
 			elif changes[path][0] == "+":
 				write_file(var.global_destination + "/" + path,changes[path][-1])
@@ -48,6 +30,25 @@ def pull(username,project_name):
 
 
 
+
+# <<<<<<< Updated upstream
+			
+# def pull(username,project_name):
+# 	changes={}
+# 	changes = chinlc.local_changes(username,project_name)
+# 	for path in changes.keys():
+# 		if changes[path][0] == "...":
+# 			overwrite_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
+# 		elif changes[path][0] == "+":
+# 			write_file(var.users_destination+"/"+username+"/"+ path,changes[path][-1])
+# 		elif changes[path][0] == "-":
+# 			os.remove(var.users_destination+"/"+username+"/"+ project_name+"/"+ path)
+# =======
+
+
+
+
+
 def pull(local_stack,global_stack,username,project_name):
 	temp_stack = []
 	for element in reversed(global_stack):
@@ -56,10 +57,11 @@ def pull(local_stack,global_stack,username,project_name):
 		else:
 			break
 	for element in temp_stack:
+		local_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
 			if changes[path][0] == "...":
-				overwrite_file(var.users_destination+"/"+username+"/"+path,changes[path][-1])
+				overwrite_file(var.global_destination+"/"+path,var.users_destination+"/"+username+"/"+path,changes[path][-1])
 			elif changes[path][0] == "+":
 				write_file(var.users_destination+"/"+path,changes[path][-1])
 			elif changes[path][0] == "-":
@@ -68,7 +70,7 @@ def pull(local_stack,global_stack,username,project_name):
 
 
 
->>>>>>> Stashed changes
+# >>>>>>> Stashed changes
 def write_file(path,changes):
 	try:
 		f = open(path,"w")
@@ -86,23 +88,23 @@ def write_file(path,changes):
 	for i in changes.keys():
 		f.write(changes[i][-1])
 
-def overwrite_file(local_path,path,changes):
+def overwrite_file(path1,path2,changes):
 	# print(changes)
 	# print("path",path)
-	if '.DS_Store' in local_path:
+	if '.DS_Store' in path1:
 		return
 	try:
-		g = open(local_path,"r")
+		g = open(path1,"r")
 	except:
-		temp = path.split("/")[:-1]
+		temp = path2.split("/")[:-1]
 		_dir2 = ""
 		for _dir in temp:
 			_dir2 += "/"+_dir+"/"
-			if os.path.exists(_dir2):
+			if os.path2.exists(_dir2):
 				pass
 			else:
 				os.mkdir(_dir2)
-		g = open(local_path,"r")
+		g = open(path1,"r")
 	# g = open(path,"r")
 	mass = [line for line in g]
 	g.close()
@@ -116,12 +118,12 @@ def overwrite_file(local_path,path,changes):
 	# 		temp[num] = "\n"
 	# print(temp)
 	try:
-		os.remove(path)
+		os.remove(path2)
 	except FileNotFoundError:
 		pass
-	print(os.listdir())
+	# print(os.listdir())
 	try:
-		f = open(path,"w")
+		f = open(path2,"w")
 		for line in mass:
 			f.write(line)
 	# f.seek(0)
@@ -129,15 +131,15 @@ def overwrite_file(local_path,path,changes):
 	# f.seek(0)
 		f.close()
 	except:
-		temp = path.split("/")[:-1]
+		temp = path2.split("/")[:-1]
 		_dir2 = ""
 		for _dir in temp:
 			_dir2 += "/"+_dir+"/"
-			if os.path.exists(_dir2):
+			if os.path2.exists(_dir2):
 				pass
 			else:
 				os.mkdir(_dir2)
-		f = open(path,"w")
+		f = open(path2,"w")
 		for line in mass:
 			f.write(line)
 	# f.seek(0)

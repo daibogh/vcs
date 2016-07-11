@@ -72,20 +72,35 @@ def pull(local_stack,global_stack,username,project_name):
 			temp_stack.append(element)
 		else:
 			break
-	for element in temp_stack:
+	while temp_stack:
+		element = temp_stack.pop()
 		local_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
-			if os.path.isdir(path):
-				continue
+			cur =var.global_destination+"/"+path
 			if changes[path][0] == "...":
 				overwrite_file(var.global_destination+"/"+path,var.users_destination+"/"+username+"/"+path,changes[path][-1])
 			elif changes[path][0] == "+":
-				write_file(var.users_destination+"/"+path,changes[path][-1])
+				if os.path.isdir(cur):
+					try:
+						os.chdir(var.users_destination+username)
+						os.mkdir(path)	
+					except:
+						continue
+				else:
+					write_file(var.users_destination+"/"+username+"/"+path,changes[path][-1])
 			elif changes[path][0] == "-":
-				os.remove(var.users_destination+"/"+username+"/"+path)
-
-
+				if os.path.isdir(var.users_destination+username+path):
+					try:
+						os.chdir(var.var.users_destination+username)
+						os.rmdir(path)	
+					except:
+						continue
+				else:
+					try:
+						os.remove(var.users_destination+"/"+username+"/"+path)
+					except:
+						pass
 
 
 # >>>>>>> Stashed changes

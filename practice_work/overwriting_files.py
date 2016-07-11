@@ -16,17 +16,31 @@ def push(local_stack,global_stack,project_name):
 		global_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
-			if os.path.isdir(path):
-				continue
-			if changes[path][0] == "...":
-				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])
+			cur =var.users_destination+username+"/"+path
+			if changes[path][0] == "-":
+				if os.path.isdir(var.global_destination+path):
+					try:
+						os.chdir(var.global_destination)
+						os.rmdir(path)	
+					except:
+						continue
+				else:
+					try:
+						os.remove(var.global_destination + "/" + path)
+					except:
+						pass
 			elif changes[path][0] == "+":
-				write_file(var.global_destination + "/" + path,changes[path][-1])
-			elif changes[path][0] == "-":
-				try:
-					os.remove(var.global_destination + "/" + path)
-				except:
-					pass
+				if os.path.isdir(cur):
+					try:
+						os.chdir(var.global_destination)
+						os.mkdir(path)	
+					except:
+						continue
+				else:		
+					write_file(var.global_destination + "/" + path,changes[path][-1])	
+			elif changes[path][0] == "...":
+				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])				
+				
 	sc.dump_g(project_name,global_stack)
 
 

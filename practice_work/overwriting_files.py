@@ -65,7 +65,7 @@ def pull(local_stack,global_stack,username,project_name):
 			elif changes[path][0] == "+":
 				write_file(var.users_destination+"/"+path,changes[path][-1])
 			elif changes[path][0] == "-":
-				os.remove(var.users_destination+"/"+path)
+				os.remove(var.users_destination+"/"+username+"/"+project_name+"/"+path)
 
 
 

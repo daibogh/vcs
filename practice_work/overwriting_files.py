@@ -16,6 +16,8 @@ def push(local_stack,global_stack,project_name):
 		global_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
+			if os.path.isdir(path):
+				continue
 			if changes[path][0] == "...":
 				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])
 			elif changes[path][0] == "+":
@@ -60,6 +62,8 @@ def pull(local_stack,global_stack,username,project_name):
 		local_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
+			if os.path.isdir(path):
+				continue
 			if changes[path][0] == "...":
 				overwrite_file(var.global_destination+"/"+path,var.users_destination+"/"+username+"/"+path,changes[path][-1])
 			elif changes[path][0] == "+":

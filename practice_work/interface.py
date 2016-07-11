@@ -158,13 +158,18 @@ def del_last_commit(username, project_name):
             sc.dump_l(username, project_name, local_stack)
             print("удаление прошло успешно")
             return 0
-
+def show_projects(username):
+	os.chdir(var.users_destination+username+"/")
+	print("список доступных вам проектов:  \n")
+	for project in os.listdir():
+		print(project+'\n')
+	print("End-############################\n")
 def interface(username):
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	print("Для начала выберите проект или создайте новый")
 	while 1:
 		command=input("введите название проекта\n>> ")
-		if command != "exit":
+		if command != "exit" and command!="show projects":
 			project_name=command
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
@@ -178,6 +183,8 @@ def interface(username):
 		elif command == 'exit':
 			if dict_command[command](username):
 				return
+		elif command == "show projects":
+			show_projects(username)
 	print("Вы выбрали проект </"+project_name+"/>")
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
@@ -210,7 +217,8 @@ def interface(username):
 			else:
 				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')
 
-
+		elif command == "show projects":
+			show_projects(username)
 
 
 		elif command == "push":

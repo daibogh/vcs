@@ -22,7 +22,7 @@ def push(local_stack,global_stack,project_name):
 				write_file(var.global_destination + "/" + path,changes[path][-1])
 			elif changes[path][0] == "-":
 				try:
-					os.remove(var.global_destination + "/" + path)
+					os.remove(var.global_destination +"/"+project_name+ "/" + path)
 				except:
 					pass
 	sc.dump_g(project_name,global_stack)

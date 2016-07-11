@@ -1,7 +1,7 @@
 import os
 def main():
-	start_detour()
-	return 0
+	ret_det()
+
 def go_in(new_directory):
 	os.chdir(os.getcwd()+'/'+new_directory)
 def go_up():
@@ -17,6 +17,7 @@ def start_detour():
 	for i in os.listdir():
 		cur = os.getcwd()+'/'+i
 		if os.path.isdir(cur):
+			mass_files.append(i)
 			go_in(i)
 			new_mass=start_detour()
 			for ind in range(len(new_mass)):
@@ -27,5 +28,9 @@ def start_detour():
 			mass_files.append(i)
 	return mass_files
 
-if "__name__" == "__main__":
+def ret_det():
+	list=start_detour()
+	return list
+
+if __name__ == "__main__":
 	main()

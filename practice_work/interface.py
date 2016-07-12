@@ -86,15 +86,6 @@ def what_to_commit(username, project_name):
     choice = int(input())
     if choice:
         m = 0
-        while len(file_numbers) != m:
-            k = 0
-            for changed_file in stack[-1]['changes'].keys():
-                k += 1
-                if k in file_numbers:
-                    file_to_del_from_stack = changed_file
-                    break
-            del (stack[-1]['changes'][file_to_del_from_stack])
-            m += 1
         f = open('stack.txt', 'wb')
         pickle.dump(stack, f)
         f.close()

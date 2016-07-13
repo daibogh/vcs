@@ -86,10 +86,20 @@ def what_to_commit(username, project_name):
     choice = int(input())
     if choice:
         m = 0
+        k = 0
+        for changed_file in stack[-1]['changes'].keys():
+            k += 1
+            print('k = ',k,'\tfile_n = ',file_numbers ,'\t k not in file_numbers = ' , k not in file_numbers)
+            if k not in file_numbers:
+                file_to_del_from_stack = changed_file
+                print('to del', file_to_del_from_stack)
+                del (stack[-1]['changes'][file_to_del_from_stack])
+                break
+        #
         f = open('stack.txt', 'wb')
         pickle.dump(stack, f)
         f.close()
-        print('Добавление коммита было успешно завершено')
+		print('Добавление коммита было успешно завершено')
     else:
         del_last_commit(username, project_name)
         print('Добавление коммита было прервано')

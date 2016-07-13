@@ -13,22 +13,22 @@ from datetime import datetime
 # 	pickle.dump(stack,f)
 # 	f.close()
 # 
-def commit(username,project_name):
+#def commit(username,project_name):
 	# check = check_updates(username,project_name)
-	element = {}
-	element["user"] = username
-	element["date-time"] = datetime.now()
-	element["changes"]=chingl.global_changes(username,project_name)
-	if element["changes"]=={}:
-		print("Не было внесено никаких изменений")
-		return
-	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
-	f = open(path_to_stack,"rb")
-	stack = pickle.load(f)
-	stack.append(element)
-	f = open(path_to_stack,"wb")
-	pickle.dump(stack,f)
-	f.close()
+#	element = {}
+#	element["user"] = username
+#	element["date-time"] = datetime.now()
+#	element["changes"]=chingl.global_changes(username,project_name)
+#	if element["changes"]=={}:
+#		print("Не было внесено никаких изменений")
+#		return
+#	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
+#	f = open(path_to_stack,"rb")
+#	stack = pickle.load(f)
+#	stack.append(element)
+#	f = open(path_to_stack,"wb")
+#	pickle.dump(stack,f)
+#	f.close()
 
 def check_updates(username,project_name):
 	global_stack = sc.load_g(project_name)
@@ -44,25 +44,25 @@ def check_updates(username,project_name):
 
 
 
-def push(username,project_name):
-	check = check_updates()
-	if check:
-		global_stack = sc.load_g(project_name)
-		local_stack = sc.load_l(username,project_name)
-
-
-
-		list_of_changes = []
-		for stack_element in reversed(local_stack):
-			if stack_element not in global_stack:
-				list_of_changes.append(stack_element)
-			else:
-				break
-		while len(list_of_changes)!=0:
-			global_stack.append(list_of_changes.pop())
-		f = open(var.global_destination+project_name+"/stack.txt","wb")
-		pickle.dump(global_stack,f)
-		f.close()
+#def push(username,project_name):
+#	check = check_updates()
+#	if check:
+#		global_stack = sc.load_g(project_name)
+#		local_stack = sc.load_l(username,project_name)
+#
+#
+#
+#		list_of_changes = []
+#		for stack_element in reversed(local_stack):
+#			if stack_element not in global_stack:
+#				list_of_changes.append(stack_element)
+#			else:
+#				break
+#		while len(list_of_changes)!=0:
+#			global_stack.append(list_of_changes.pop())
+#		f = open(var.global_destination+project_name+"/stack.txt","wb")
+#		pickle.dump(global_stack,f)
+#		f.close()
 
 
 def del_last_commit(username,project_name):

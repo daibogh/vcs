@@ -27,7 +27,6 @@ def set_file():
 	return
 def add():
 	return
-commit = uc.commit
 def del_in_index():
 	return
 def del_file():
@@ -44,21 +43,25 @@ def exit(username):
 	else:
 		return False
 def commit(username,project_name):
-	# check = check_updates(username,project_name)
-	element = {}
-	element["user"] = username
-	element["date-time"] = datetime.now()
-	element["changes"]=chingl.global_changes(username,project_name)
-	if element["changes"]=={}:
-		print("Не было внесено никаких изменений")
-		return
-	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
-	f = open(path_to_stack,"rb")
-	stack = pickle.load(f)
-	stack.append(element)
-	f = open(path_to_stack,"wb")
-	pickle.dump(stack,f)
-	f.close()
+	check = uc.check_updates(username,project_name)
+	if check:
+		element = {}
+		element["user"] = username
+		element["date-time"] = datetime.now()
+		element["changes"]=chingl.global_changes(username,project_name)
+		if element["changes"]=={}:
+			print("Не было внесено никаких изменений")
+			return
+		path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
+		f = open(path_to_stack,"rb")
+		stack = pickle.load(f)
+		stack.append(element)
+		f = open(path_to_stack,"wb")
+		pickle.dump(stack,f)
+		f.close()
+	else:
+		print("Ваша версия устарела, обновите проект (update)")
+			
 def what_to_commit(username, project_name):
     os.chdir(var.users_destination + username + '/' + project_name)
     f = open('stack.txt','rb')
@@ -99,7 +102,7 @@ def what_to_commit(username, project_name):
         f = open('stack.txt', 'wb')
         pickle.dump(stack, f)
         f.close()
-		print('Добавление коммита было успешно завершено')
+        print('Добавление коммита было успешно завершено')
     else:
         del_last_commit(username, project_name)
         print('Добавление коммита было прервано')

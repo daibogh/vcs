@@ -186,6 +186,16 @@ def show_projects(username):
 	print("End-############################\n")
 def interface(username):
 	while 1:
+		if not os.path.exist(var.administration + 'users_requests.txt'):
+			base_struct = {}
+			f = open('users_requests.txt','wb')
+			pickle.dump(base_struct, f)
+			f.close()
+		if not os.path.exist(var.administration + 'users_rights_for_projects.txt'):
+			base_struct = {}
+			f = open('users_rights_for_projects.txt','wb')
+			pickle.dump(base_struct, f)
+			f.close()
 		print("Вы можете выбрать свой проект(сhoose)")
 		print("создать новый(make)")
 		print("загрузить проект из глобальной директории(load)")
@@ -280,6 +290,22 @@ def interface(username):
 
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
+
+
+
+
+
+
+		elif command == 'add_users_to_prj':
+			uc.add_users_to_prj(username, project_name)
+
+
+
+
+
+
+		elif command == 'del_users_to_prj':
+			uc.del_users_to_prj(username, project_name)
 
 
 

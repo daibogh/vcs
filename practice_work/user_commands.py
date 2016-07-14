@@ -264,6 +264,9 @@ def add_users_to_prj(username, project_name):
 	f = open('users.txt', 'rb')
 	users = pickle.load(f)
 	f.close()
+	f = open('users_rights_for_projects.txt', 'rb')
+	users_rights = pickle.load(f)
+	f.close()
 	for user in users.keys():
 		if user != 'admin' and user != username:
 			print('\t' + user)
@@ -285,6 +288,8 @@ def add_users_to_prj(username, project_name):
 			users_for_add.append(user)
 		else:
 			print('Пользователь ' + user + ' не зарегистрирован в vcs')
+		if user in users_rights[project_name]:
+			users_for_add.remove(user)
 	if len(users_for_add) == 0:
 		print('Ни один, из введённых пользователей, не может быть добавлен в проект ' + project_name)
 		return
@@ -402,8 +407,7 @@ def check_users_requests(username):
                 print('request ==',requset)
                 if counter in answer:
                     users_rights[requset[1]].append(username)
-                    users_requests[username].remove(requset)
-            print(users_requests)
+            del(users_requests[username])
             f = open('users_requests.txt','wb')
             pickle.dump(users_requests, f)
             f.close()

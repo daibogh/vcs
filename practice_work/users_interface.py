@@ -2,7 +2,7 @@ import sys
 import variables as var
 import signing_in as si
 import interface as intf
-import users_commands as uc
+import user_commands as uc
 
 def users_interface():
 	print("Добро пожаловать в наш VCS.")

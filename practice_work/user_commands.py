@@ -186,45 +186,45 @@ def show_com_date_time(username, project_name, num):
 		return
 def show_commit(username, project_name, num):
 	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
-    dirs_in_user = os.listdir(var.users_destination + username)
-    if os.path.exists(var.users_destination + username + '/' + project_name + '/'):
-        path_to_project = var.users_destination + username + '/' + project_name + '/'
-        os.chdir(path_to_project)
-        f = open('stack.txt', 'rb')
-        stack = pickle.load(f)
-        f.close()
-        if len(stack) < num:
-            print('Коммита с таким номером нет!')
-            return
-        elif len(stack) == 1:
-            print('Коммит пуст!')
-            return
-        print('Изменения в проекте', project_name, 'были сделаны ', stack[num]['date-time'])
-        print()
-        print('Изменения:')
-        print()
-        isSmthChange = False
-        for change in stack[num]['changes']: # ['changes'][1:] -> Error: unhashable type: 'slice'
-            isSmthChange = True
-            print(stack[num]['changes'][change][0], change)
-            if change[0] == '+' or change[0] == '...': # Если файл добавлен или изменён
-                if stack[num]['changes'][change][0] == '+' or stack[num]['changes'][change][0] == '-':
-                    for line_in_change in stack[num]['changes'][change][1]:
-                        if line_in_change[0] == '+' or line_in_change[0] == '-':
-                            print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
-                        else:
-                        	print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
-            else:	# Если файл удалён
-                print('-', change)
-    else:
-        if not os.path.exists(var.users_destination + username + '/'):
-            print('В VCS нет пользователя', username)
-        else:
-            print('У пользователя', username, 'нет проекта с именем', project_name)
+		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		return
+	dirs_in_user = os.listdir(var.users_destination + username)
+	if os.path.exists(var.users_destination + username + '/' + project_name + '/'):
+		path_to_project = var.users_destination + username + '/' + project_name + '/'
+		os.chdir(path_to_project)
+		f = open('stack.txt', 'rb')
+		stack = pickle.load(f)
+		f.close()
+		if len(stack) < num:
+			print('Коммита с таким номером нет!')
+			return
+		elif len(stack) == 1:
+			print('Коммит пуст!')
+			return
+		print('Изменения в проекте', project_name, 'были сделаны ', stack[num]['date-time'])
+		print()
+		print('Изменения:')
+		print()
+		isSmthChange = False
+		for change in stack[num]['changes']: # ['changes'][1:] -> Error: unhashable type: 'slice'
+			isSmthChange = True
+			print(stack[num]['changes'][change][0], change)
+			if change[0] == '+' or change[0] == '...': # Если файл добавлен или изменён
+				if stack[num]['changes'][change][0] == '+' or stack[num]['changes'][change][0] == '-':
+					for line_in_change in stack[num]['changes'][change][1]:
+						if line_in_change[0] == '+' or line_in_change[0] == '-':
+							print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1])
+						else:
+							print('\t  ', stack[num]['changes'][change][0], stack[num]['changes'][change][1],'->', stack[num]['changes'][change][2])
+			else:	# Если файл удалён
+				print('-', change)
+	else:
+		if not os.path.exists(var.users_destination + username + '/'):
+			print('В VCS нет пользователя', username)
+		else:
+			print('У пользователя', username, 'нет проекта с именем', project_name)
 
-        return
+		return
 
 def show_not_pushed(username,project_name):
 	if not have_user_some_lvl_of_rights(username,project_name):
@@ -311,7 +311,7 @@ def add_users_to_prj(username, project_name):
 		return
 def del_users_from_prj(username, project_name):
     if not have_user_high_lvl_of_rights(username, project_name):
-    	print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
         return
     f = open('users_rights_for_projects.txt','rb')
     list_with_users_in_prj = pickle.load(f)

@@ -66,10 +66,10 @@ def commit(username,project_name):
 		print("Ваша версия устарела, обновите проект (update)")
 			
 def what_to_commit(username, project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
-	commit(username, project_name)
+    if not have_user_some_lvl_of_rights(username,project_name):
+        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+        return
+    commit(username, project_name)
     os.chdir(var.users_destination + username + '/' + project_name)
     f = open('stack.txt','rb')
     stack = pickle.load(f)
@@ -115,9 +115,9 @@ def what_to_commit(username, project_name):
         print('Добавление коммита было прервано')
         return
 def del_last_commit(username, project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
+    if not have_user_some_lvl_of_rights(username,project_name):
+        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+        return
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
     if local_stack in global_stack:

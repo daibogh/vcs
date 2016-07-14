@@ -134,6 +134,7 @@ def make_project(username,project_name):
 	f = open('users_rights_for_projects.txt', 'wb')
 	pickle.dump(user_rights, f)
 	f.close()
+	'''
 	#Добавление шаблона для запросов
 	f = open('users_requests.txt', 'rb')
 	user_requests = pickle.load(f)
@@ -144,6 +145,7 @@ def make_project(username,project_name):
 	f = open('users_requests.txt', 'wb')
 	pickle.dump(user_requests, f)
 	f.close()
+	'''
 	return 0
     
 def show_com_username(username, project_name, num):

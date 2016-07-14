@@ -101,8 +101,8 @@ def pull(local_stack,global_stack,username,project_name):
 						os.remove(var.users_destination+"/"+username+"/"+path)
 					except:
 						pass
-	upd_stack = sc.load_l(global_stack[-1]["user"],project_name)					
-	sc.dump_l(username,project_name,upd_stack)
+		
+	sc.dump_l(username,project_name,local_stack)
 
 # >>>>>>> Stashed changes
 def write_file(path,changes):

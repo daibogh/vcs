@@ -43,6 +43,9 @@ def exit(username):
 	else:
 		return False
 def commit(username,project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	check = uc.check_updates(username,project_name)
 	if check:
 		element = {}
@@ -63,6 +66,10 @@ def commit(username,project_name):
 		print("Ваша версия устарела, обновите проект (update)")
 			
 def what_to_commit(username, project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
+	commit(username, project_name)
     os.chdir(var.users_destination + username + '/' + project_name)
     f = open('stack.txt','rb')
     stack = pickle.load(f)
@@ -108,6 +115,9 @@ def what_to_commit(username, project_name):
         print('Добавление коммита было прервано')
         return
 def del_last_commit(username, project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
     if local_stack in global_stack:
@@ -140,10 +150,16 @@ dict_command = {
 }
 
 def pre_push(username,project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
 def pre_pull(username,project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.pull(local_stack,global_stack,username,project_name)
@@ -216,7 +232,6 @@ def interface(username):
 			if choice in ["да", "д", "yes", "y"]:
 				commit(username,project_name)
 			elif choice in ['нет', 'н', 'no', 'n']:
-				commit(username,project_name)
 				what_to_commit(username, project_name)
 			else:
 				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')

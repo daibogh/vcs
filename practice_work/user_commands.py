@@ -123,9 +123,33 @@ def make_project(username,project_name):
 	f = open("stack.txt","wb")
 	pickle.dump(local_stack,f)
 	f.close()
+	#Добавление прав для пользователя
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt', 'rb')
+	user_rights = pickle.load(f)
+	f.close()
+	users_for_add = {project_name:['admin', username]}
+	user_rights.update(users_for_add)
+	f = open('users_rights_for_projects.txt', 'wb')
+	pickle.dump(user_rights, f)
+	f.close()
+	f = open('users_rights_for_projects.txt', 'wb')
+	pickle.dump(user_rights, f)
+	f.close()
+	#Добавление шаблона для запросов
+	f = open('users_requests.txt', 'rb')
+	user_requests = pickle.load(f)
+	f.close()
+	user_requests.update({username:[]})
+	f = open('users_requests.txt', 'rb')
+	pickle.dump(user_requests, f)
+	f.close()
 	return 0
     
 def show_com_username(username, project_name, num):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	dirs_in_user = os.listdir(var.users_destination+username)
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
@@ -142,6 +166,9 @@ def show_com_username(username, project_name, num):
 		print('В VCS ещё не зарегистрирован ни один пользователь')
 		return
 def show_com_date_time(username, project_name, num):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	dirs_in_user = os.listdir(var.users_destination+username)
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
@@ -158,6 +185,9 @@ def show_com_date_time(username, project_name, num):
 		print('В VCS ещё не зарегистрирован ни один пользователь')
 		return
 def show_commit(username, project_name, num):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
     dirs_in_user = os.listdir(var.users_destination + username)
     if os.path.exists(var.users_destination + username + '/' + project_name + '/'):
         path_to_project = var.users_destination + username + '/' + project_name + '/'
@@ -197,6 +227,9 @@ def show_commit(username, project_name, num):
         return
 
 def show_not_pushed(username,project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	global_stack = sc.load_g(project_name)
 	local_stack = sc.load_l(username,project_name)
 	list_of_changes = []
@@ -209,6 +242,9 @@ def show_not_pushed(username,project_name):
 	return list_of_changes
 
 def del_couple_commits(username,project_name):
+	if not have_user_some_lvl_of_rights(username,project_name):
+		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		 return
 	local_stack = sc.load_l(username,project_name)
 	list_of_changes = show_not_pushed(username,project_name)
 	pushed_commits = []
@@ -218,62 +254,64 @@ def del_couple_commits(username,project_name):
 	sc.dump_l(username,project_name,pushed_commits)
 ################################################	КОММАНДЫ ДЛЯ ПРАВ	################################################	
 def add_users_to_prj(username, project_name):
-		if not have_enough_rights(username, project_name):
-			return
-		os.chdir(var.administration)
-		print('Список пользователей:')
-		f = open('users.txt', 'rb')
-		users = pickle.load(f)
-		f.close()
-		for user in users.keys():
-			if user != 'admin' and user != username:
-				print('\t' + user)
-		print('Введите через пробел имена пользователей, которых вы хотите добавить в проект:')
-		print('>', end=' ')
-		users = input().split()  # users это ['Dima', 'Denis']
-		for user in users:  # Удаляем повторяющихся юзеров
-			if users.count(user) != 1:
-				while users.count(user) != 1:
-					users.remove(user)
-		if 'admin' in users:
-			users.remove('admin')
-		f = open('users.txt', 'rb')
-		registered_users = pickle.load(f)
-		f.close()
-		users_for_add = []
-		for user in users:
-			if user in registered_users.keys():
-				users_for_add.append(user)
-			else:
-				print('Пользователь ' + user + ' не зарегистрирован в vcs')
-		if len(users_for_add) == 0:
-			print('Ни один, из введённых пользователей, не может быть добавлен в проект ' + project_name)
-			return
-		print('Список пользователей для добавления в проект:')
-		for user in users:
-			print('\t', user, end=' ')
-		print()
-		print('Для окончательного добавления нажмите 1, для отмены - 0')
-		choice = int(input())
-		if choice:
-			f = open('users_requests.txt', 'rb')
-			requests = pickle.load(f)
-			f.close()
-			for user in users_for_add:
-				if user not in requests.keys():
-					requests[user] = []
-				if project_name not in requests[user]:
-					requests[user].append([username, project_name])
-				else:
-					print('Вы уже отправляли приглашение пользователю', user, 'на присоединение к проекту')
-			f = open('users_requests.txt', 'wb')
-			requests = pickle.dump(requests, f)
-			f.close()
+	if not have_user_high_lvl_of_rights(username, project_name):
+		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		return
+	os.chdir(var.administration)
+	print('Список пользователей:')
+	f = open('users.txt', 'rb')
+	users = pickle.load(f)
+	f.close()
+	for user in users.keys():
+		if user != 'admin' and user != username:
+			print('\t' + user)
+	print('Введите через пробел имена пользователей, которых вы хотите добавить в проект:')
+	print('>', end=' ')
+	users = input().split()  # users это ['Dima', 'Denis']
+	for user in users:  # Удаляем повторяющихся юзеров
+		if users.count(user) != 1:
+			while users.count(user) != 1:
+				users.remove(user)
+	if 'admin' in users:
+		users.remove('admin')
+	f = open('users.txt', 'rb')
+	registered_users = pickle.load(f)
+	f.close()
+	users_for_add = []
+	for user in users:
+		if user in registered_users.keys():
+			users_for_add.append(user)
 		else:
-			print('Запрос на приглашение новых пользователей был отменён')
-			return
+			print('Пользователь ' + user + ' не зарегистрирован в vcs')
+	if len(users_for_add) == 0:
+		print('Ни один, из введённых пользователей, не может быть добавлен в проект ' + project_name)
+		return
+	print('Список пользователей для добавления в проект:')
+	for user in users:
+		print('\t', user, end=' ')
+	print()
+	print('Для окончательного добавления нажмите 1, для отмены - 0')
+	choice = int(input())
+	if choice:
+		f = open('users_requests.txt', 'rb')
+		requests = pickle.load(f)
+		f.close()
+		for user in users_for_add:
+			if user not in requests.keys():
+				requests[user] = []
+			if project_name not in requests[user]:
+				requests[user].append([username, project_name])
+			else:
+				print('Вы уже отправляли приглашение пользователю', user, 'на присоединение к проекту')
+		f = open('users_requests.txt', 'wb')
+		requests = pickle.dump(requests, f)
+		f.close()
+	else:
+		print('Запрос на приглашение новых пользователей был отменён')
+		return
 def del_users_from_prj(username, project_name):
-    if not have_enough_rights(username, project_name):
+    if not have_user_high_lvl_of_rights(username, project_name):
+    	print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
         return
     f = open('users_rights_for_projects.txt','rb')
     list_with_users_in_prj = pickle.load(f)
@@ -371,6 +409,37 @@ def check_users_requests(username):
             pickle.dump(users_rights, f)
             f.close()
             print('Обработка приглашений завершена')
+        ################################################### вставить сюда ф-цию клпирования проекта из глобала в локал
     else:
         print('У вас нет новых приглашений в проекты')
-        
+def have_user_high_lvl_of_rights(username, project_name):
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt', 'rb')
+	obj = pickle.load(f)
+	f.close()
+	if obj[project_name][0] != username and obj[project_name][1] != username:
+		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		return 0
+	else:
+		return 1
+def have_user_some_lvl_of_rights(username, project_name):
+    os.chdir(var.administration)
+    f = open('users_rights_for_projects.txt', 'rb')
+    obj = pickle.load(f)
+    f.close()
+    if username not in obj[project_name]:
+        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+        return 0
+    else:
+        return 1
+'''
+def copy_from_GL_to_LC(username, project_name):
+	os.mkdir(var.local_destination+username + '/' + project_name+'/')
+	os.chdir(var.local_destination+username + '/' + project_name+'/')
+	local_stack = sc.make_stack(username,project_name)
+	f = open("stack.txt","wb")
+	pickle.dump(local_stack,f)
+	f.close()
+	commit(username, project_name)
+	pre_push(username, project_name)
+'''

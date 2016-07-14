@@ -1,5 +1,6 @@
 import os
 import pickle
+import shutil
 import variables as var
 import stack_commands as sc
 import py_detour as py_dtour
@@ -133,15 +134,14 @@ def make_project(username,project_name):
 	f = open('users_rights_for_projects.txt', 'wb')
 	pickle.dump(user_rights, f)
 	f.close()
-	f = open('users_rights_for_projects.txt', 'wb')
-	pickle.dump(user_rights, f)
-	f.close()
 	#Добавление шаблона для запросов
 	f = open('users_requests.txt', 'rb')
 	user_requests = pickle.load(f)
 	f.close()
+	print(user_requests)
 	user_requests.update({username:[]})
-	f = open('users_requests.txt', 'rb')
+	print(user_requests)
+	f = open('users_requests.txt', 'wb')
 	pickle.dump(user_requests, f)
 	f.close()
 	return 0

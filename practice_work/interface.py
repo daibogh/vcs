@@ -185,12 +185,16 @@ def show_projects(username):
 		print(project+'\n')
 	print("End-############################\n")
 def interface(username):
-	print("Выберите команду(чтобы узнать список команд, наберите help)")
-	print("Для начала выберите проект или создайте новый")
 	while 1:
-		command=input("введите название проекта\n>> ")
-		if command != "exit" and command!="show projects":
-			project_name=command
+		print("Вы можете выбрать свой проект(сhoose)")
+		print("создать новый(make)")
+		print("загрузить проект из глобальной директории(load)")
+		print("или выйти(exit)")
+		command=input(">> ")
+		if command == "choose":
+			print("Выберите проект")
+			show_projects(username)
+			project_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
@@ -200,11 +204,22 @@ def interface(username):
 				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
 					project_name=mk_prjct(username)
 					break
-		elif command == 'exit':
-			if dict_command[command](username):
+		elif command == "make":
+			project_name=mk_prjct(username)
+			break
+		elif command == "load":
+			print("Выберите проект")
+			show_global_projects()
+			project_name=input(">> ")
+			if uc.make_project_local(username, project_name) != 0:
+				pre_pull(username,project_name)
+				break
+		elif command == "exit":
+			if exit(username):
 				return
-		elif command == "show projects":
-			show_projects(username)
+		else:
+			print("Такой команды нет.")		
+
 	print("Вы выбрали проект </"+project_name+"/>")
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:

@@ -443,3 +443,16 @@ def copy_from_GL_to_LC(username, project_name):
 	commit(username, project_name)
 	pre_push(username, project_name)
 '''
+
+def make_project_local(username, project_name):
+	global_stack=sc.load_g(project_name)
+	if global_stack == 0:
+		return 0
+	try:
+		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
+	except:
+		return
+	f = open(var.users_destination+username+"/"+project_name+"/stack.txt","wb")
+	pickle.dump([global_stack[0]],f)
+	f.close()
+	return 

@@ -272,7 +272,7 @@ def interface(username):
 			if len(command.split()) > 1:
 				log.log(project_name," ".join(command.split()[1:]))
 			else:
-				log.log(project_name,"simple")
+				log.log(project_name,"--simple")
 
 
 

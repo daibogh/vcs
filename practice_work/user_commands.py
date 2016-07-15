@@ -31,10 +31,10 @@ from datetime import datetime
 #	pickle.dump(stack,f)
 #	f.close()
 
-def check_updates(username,project_name):
-	global_stack = sc.load_g(project_name)
+def check_updates(username,project_name,branch_name):
+	global_stack = sc.load_g(project_name,branch_name)
 	
-	local_stack = sc.load_l(username,project_name)
+	local_stack = sc.load_l(username,project_name,branch_name)
 	if len(global_stack)>len(local_stack):
 		return False
 	elif global_stack[-1] in local_stack:
@@ -66,9 +66,9 @@ def check_updates(username,project_name):
 #		f.close()
 
 
-def del_last_commit(username,project_name):
-	global_stack = sc.load_g(project_name)
-	local_stack = sc.load_l(username, project_name)
+def del_last_commit(username,project_name,branch_name):
+	global_stack = sc.load_g(project_name,branch_name)
+	local_stack = sc.load_l(username, project_name,branch_name,branch_name)
 	if local_stack in global_stack:
 		print("невозможно удалить последний коммит, обратитесь к администратору")
 		return
@@ -76,7 +76,7 @@ def del_last_commit(username,project_name):
 		print("вы уверены, что хотите удалить последний коммит?(д/н)")
 		if input().lower() in ["да","д","yes","y"]:
 			local_stack = local_stack[:-1]
-			sc.dump_l(username,project_name,local_stack)
+			sc.dump_l(username,project_name,local_stack,branch_name)
 			print("удаление прошло успешно")
 			return 0
 
@@ -97,7 +97,7 @@ def make_project(username,project_name):
 					return 0
 				elif int(input()) == 2:
 					# shutil.rmtree('/folder_name')
-					shutil.rmtree(var.global_destination+project_name)
+					shutil.rmtree(var.global_destination+project_name+'/')
 					try:
 						shutil.rmtree(var.users_destination+"/"+username+"/"+project_name+"/")
 						make_project(username,project_name)
@@ -109,19 +109,27 @@ def make_project(username,project_name):
 					break
 			except:
 				pass
-
-	os.chdir(var.global_destination+project_name+'/')
+	try:			
+		os.mkdir(var.global_destination+project_name+'/' + 'master')
+	except:
+		shutil.rmtree(var.global_destination+project_name+'/' + 'master')	
+	os.chdir(var.global_destination+project_name+'/' + 'master')
 	global_stack = sc.make_stack(username,project_name)
-	f = open("stack.txt","wb")
+	f = open(".stack.txt","wb")
 	pickle.dump(global_stack,f)
 	f.close()
 	local_stack = global_stack
 	try:
-		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
+		os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/')
 	except:
-		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name+"/")
-	os.chdir(var.users_destination+"/"+username+"/"+project_name+"/")
-	f = open("stack.txt","wb")
+		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name +'/')
+
+	try:
+		os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/' + 'master')
+	except:
+		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name +'/' + 'master')
+	os.chdir(var.users_destination+"/"+username+"/"+project_name +'/' + 'master')
+	f = open(".stack.txt","wb")
 	pickle.dump(local_stack,f)
 	f.close()
 	#Добавление прав для пользователя
@@ -149,7 +157,7 @@ def make_project(username,project_name):
 	return 0
     
 def show_com_username(username, project_name, num):
-	if not have_user_some_lvl_of_rights(username,project_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
 	dirs_in_user = os.listdir(var.users_destination+username)
@@ -168,7 +176,7 @@ def show_com_username(username, project_name, num):
 		print('В VCS ещё не зарегистрирован ни один пользователь')
 		return
 def show_com_date_time(username, project_name, num):
-	if not have_user_some_lvl_of_rights(username,project_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
 	dirs_in_user = os.listdir(var.users_destination+username)
@@ -228,12 +236,12 @@ def show_commit(username, project_name, num):
 
 		return
 
-def show_not_pushed(username,project_name):
+def show_not_pushed(username,project_name,branch_name):
 	if not have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
-	global_stack = sc.load_g(project_name)
-	local_stack = sc.load_l(username,project_name)
+	global_stack = sc.load_g(project_name,branch_name)
+	local_stack = sc.load_l(username,project_name,branch_name)
 	list_of_changes = []
 	for stack_element in reversed(local_stack):
 		if stack_element not in global_stack:
@@ -243,17 +251,17 @@ def show_not_pushed(username,project_name):
 	print(list_of_changes)
 	return list_of_changes
 
-def del_couple_commits(username,project_name):
+def del_couple_commits(username,project_name,branch_name):
 	if not have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
-	local_stack = sc.load_l(username,project_name)
+	local_stack = sc.load_l(username,project_name,branch_name)
 	list_of_changes = show_not_pushed(username,project_name)
 	pushed_commits = []
 	for stack_element in reversed(local_stack):
 		if stack_element not in list_of_changes:
 			pushed_commits.append(stack_element)
-	sc.dump_l(username,project_name,pushed_commits)
+	sc.dump_l(username,project_name,pushed_commits,branch_name)
 ################################################	КОММАНДЫ ДЛЯ ПРАВ	################################################	
 def add_users_to_prj(username, project_name):
 	if not have_user_high_lvl_of_rights(username, project_name):
@@ -450,8 +458,8 @@ def copy_from_GL_to_LC(username, project_name):
 	pre_push(username, project_name)
 '''
 
-def make_project_local(username, project_name):
-	global_stack=sc.load_g(project_name)
+def make_project_local(username, project_name,branch_name):
+	global_stack=sc.load_g(project_name,branch_name)
 	if global_stack == 0:
 		return 0
 	try:
@@ -462,3 +470,41 @@ def make_project_local(username, project_name):
 	pickle.dump([global_stack[0]],f)
 	f.close()
 	return 
+
+def make_branch(username,project_name,branch_name):
+	stack_struct = sc.make_stack(username,project_name)
+	gl_path = var.global_destination + '/' + project_name + '/' + branch_name
+	try:
+		os.mkdir(gl_path)
+	except:
+		print("такое название уже есть, назвать по-другому или создать заново ветку с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
+		while 1:
+			try:
+				if int(input()) == 1:
+					new_branch_name = input("введите новое название ветки\n")
+					make_branch(username,project_name,new_branch_name)
+					return 0
+				elif int(input()) == 2:
+					shutil.rmtree(gl_path)
+					try:
+						shutil.rmtree(gl_path)
+						make_branch(username,project_name,branch_name)
+						return 0
+					except:
+						print("error!")
+						return 1
+						pass
+					break
+			except:
+				pass
+	lc_path = var.users_destination + username + '/' + project_name + '/' + branch_name
+	f = open(gl_path + '/' + '.stack.txt','wb')
+	pickle.dump(stack_struct,f)
+	f.close()
+	try:			
+		os.mkdir(lc_path)
+	except:
+		shutil.rmtree(lc_path)
+	f = open(lc_path + '/' + '.stack.txt','wb')
+	pickle.dump(stack_struct,f)
+	f.close()

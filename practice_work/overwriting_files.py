@@ -2,8 +2,8 @@ import os
 import os.path
 import variables as var
 import stack_commands as sc
-import changes_in_local as chinlc
-def push(local_stack,global_stack,project_name):
+
+def push(local_stack,global_stack,project_name,branch_name):
 	temp_stack = []
 	username = local_stack[-1]["user"]
 	for element in reversed(local_stack):
@@ -41,7 +41,7 @@ def push(local_stack,global_stack,project_name):
 			elif changes[path][0] == "...":
 				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])				
 				
-	sc.dump_g(project_name,global_stack)
+	sc.dump_g(project_name,global_stack,branch_name)
 
 
 
@@ -65,7 +65,7 @@ def push(local_stack,global_stack,project_name):
 
 
 
-def pull(local_stack,global_stack,username,project_name):
+def pull(local_stack,global_stack,username,project_name,branch_name):
 	temp_stack = []
 	for element in reversed(global_stack):
 		if element not in local_stack:
@@ -102,7 +102,7 @@ def pull(local_stack,global_stack,username,project_name):
 					except:
 						pass
 		
-	sc.dump_l(username,project_name,local_stack)
+	sc.dump_l(username,project_name,local_stack,branch_name)
 
 # >>>>>>> Stashed changes
 def write_file(path,changes):

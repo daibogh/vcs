@@ -42,20 +42,20 @@ def exit(username):
 		return True
 	else:
 		return False
-def commit(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
+def commit(username,project_name,branch_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
-	check = uc.check_updates(username,project_name)
+	check = uc.check_updates(username,project_name,branch_name)
 	if check:
 		element = {}
 		element["user"] = username
 		element["date-time"] = datetime.now()
-		element["changes"]=chingl.global_changes(username,project_name)
+		element["changes"]=chingl.global_changes(username,project_name,branch_name)
 		if element["changes"]=={}:
 			print("Не было внесено никаких изменений")
 			return
-		path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
+		path_to_stack = var.users_destination+username+"/"+project_name+'/'+branch_name+"/"+".stack.txt"
 		f = open(path_to_stack,"rb")
 		stack = pickle.load(f)
 		stack.append(element)
@@ -111,7 +111,7 @@ def what_to_commit(username, project_name):
         f.close()
         print('Добавление коммита было успешно завершено')
     else:
-        del_last_commit(username, project_name)
+        del_last_commit(username, project_name,branch_name)
         print('Добавление коммита было прервано')
         return
 def del_last_commit(username, project_name):
@@ -149,25 +149,25 @@ dict_command = {
 	"push":of.push
 }
 
-def pre_push(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
+def pre_push(username,project_name,branch_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
-	local_stack = sc.load_l(username,project_name)
-	global_stack = sc.load_g(project_name)
-	of.push(local_stack,global_stack,project_name)
-def pre_pull(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
+	local_stack = sc.load_l(username,project_name,branch_name)
+	global_stack = sc.load_g(project_name,branch_name)
+	of.push(local_stack,global_stack,project_name,branch_name)
+def pre_pull(username,project_name,branch_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
-	local_stack = sc.load_l(username,project_name)
-	global_stack = sc.load_g(project_name)
-	of.pull(local_stack,global_stack,username,project_name)
+	local_stack = sc.load_l(username,project_name,branch_name)
+	global_stack = sc.load_g(project_name,branch_name)
+	of.pull(local_stack,global_stack,username,project_name,branch_name)
 
 
-def del_last_commit(username, project_name):
-    global_stack = sc.load_g(project_name)
-    local_stack = sc.load_l(username, project_name)
+def del_last_commit(username, project_name,branch_name):
+    global_stack = sc.load_g(project_name,branch_name)
+    local_stack = sc.load_l(username, project_name,branch_name)
     if local_stack in global_stack:
         print("невозможно удалить последний коммит, обратитесь к администратору")
         return
@@ -175,7 +175,7 @@ def del_last_commit(username, project_name):
         print("вы уверены, что хотите удалить последний коммит?(д/н)")
         if input().lower() in ["да", "д", "yes", "y"]:
             local_stack = local_stack[:-1]
-            sc.dump_l(username, project_name, local_stack)
+            sc.dump_l(username, project_name, local_stack,branch_name)
             print("удаление прошло успешно")
             return 0
 def show_projects(username):
@@ -186,7 +186,7 @@ def show_projects(username):
 	print("End-############################\n")
 def interface(username):
 	while 1:
-		if not os.path.exist(var.administration + 'users_requests.txt'):
+		'''if not os.path.exist(var.administration + 'users_requests.txt'):
 			base_struct = {}
 			f = open('users_requests.txt','wb')
 			pickle.dump(base_struct, f)
@@ -195,7 +195,7 @@ def interface(username):
 			base_struct = {}
 			f = open('users_rights_for_projects.txt','wb')
 			pickle.dump(base_struct, f)
-			f.close()
+			f.close()'''
 		print("Вы можете выбрать свой проект(сhoose)")
 		print("создать новый(make)")
 		print("загрузить проект из глобальной директории(load)")
@@ -221,7 +221,7 @@ def interface(username):
 			print("Выберите проект")
 			show_global_projects()
 			project_name=input(">> ")
-			if uc.make_project_local(username, project_name) != 0:
+			if uc.make_project_local(username, project_name,branch_name) != 0:
 				pre_pull(username,project_name)
 				break
 		elif command == "exit":
@@ -255,7 +255,7 @@ def interface(username):
 		elif command == "commit":
 			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
 			if choice in ["да", "д", "yes", "y"]:
-				commit(username,project_name)
+				commit(username,project_name,branch_name)
 			elif choice in ['нет', 'н', 'no', 'n']:
 				what_to_commit(username, project_name)
 			else:
@@ -266,14 +266,14 @@ def interface(username):
 
 
 		elif command == "push":
-			pre_push(username,project_name)
+			pre_push(username,project_name,branch_name)
 
 
 
 
 
 		elif command == "update":
-			pre_pull(username,project_name)
+			pre_pull(username,project_name,branch_name)
 
 
 
@@ -328,6 +328,26 @@ def interface(username):
 		elif command == "help":
 			dict_command[command]()
 
+
+
+			
+		elif command == 'make_branch':
+			print("Введите название ветки")
+			branch_name=input(">> ")
+			uc.make_branch(username,project_name,branch_name)
+			print("Вы выбрали ветку </"+branch_name+"/>")
+		elif command == "set branch":
+			print("Введите название ветки")
+			branch_name=input(">> ")
+			os.chdir(var.users_destination+"/"+username+"/"+project_name+'/')
+			br_list = os.listdir()
+			if branch_name in br_list:
+				print("Вы выбрали ветку </"+branch_name+"/>")
+			else:
+				print("у вас нету такой ветки")
+				if input("Вы хотите создать ветку?(д/н) ").lower() in ["да", "д", "yes", "y"]:
+					branch_name=uc.make_branch(username,project_name,branch_name)
+					print("Вы выбрали ветку </"+branch_name+"/>")
 
 
 

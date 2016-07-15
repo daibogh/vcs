@@ -4,14 +4,11 @@ import pickle
 import getpass
 import variables as var
 import signing_in as sign
-import interface
-
+import users_interface as users_i
+# import interface
+import user_commands as uc
 def main():
-	print("hello world!")
-	current_user = sign.login()
-	interface.interface(current_user)
-	
-
+	users_i.users_interface()()
 
 
 if __name__ == "__main__":

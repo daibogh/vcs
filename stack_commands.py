@@ -15,7 +15,11 @@ def make_stack(username,project_name):
 
 
 def load_g(project_name):
-	f = open(var.global_destination+project_name+"/stack.txt","rb")
+	try:
+		f = open(var.global_destination+project_name+"/stack.txt","rb")
+	except:
+		print("Такого проекта не существует.\n")
+		return 0	
 	global_stack = pickle.load(f)
 	f.close()
 	return global_stack

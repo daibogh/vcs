@@ -27,6 +27,7 @@ def set_file():
 	return
 def add():
 	return
+commit = uc.commit
 def del_in_index():
 	return
 def del_file():
@@ -43,33 +44,22 @@ def exit(username):
 	else:
 		return False
 def commit(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
-	check = uc.check_updates(username,project_name)
-	if check:
-		element = {}
-		element["user"] = username
-		element["date-time"] = datetime.now()
-		element["changes"]=chingl.global_changes(username,project_name)
-		if element["changes"]=={}:
-			print("Не было внесено никаких изменений")
-			return
-		path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
-		f = open(path_to_stack,"rb")
-		stack = pickle.load(f)
-		stack.append(element)
-		f = open(path_to_stack,"wb")
-		pickle.dump(stack,f)
-		f.close()
-	else:
-		print("Ваша версия устарела, обновите проект (update)")
-			
+	# check = check_updates(username,project_name)
+	element = {}
+	element["user"] = username
+	element["date-time"] = datetime.now()
+	element["changes"]=chingl.global_changes(username,project_name)
+	if element["changes"]=={}:
+		print("Не было внесено никаких изменений")
+		return
+	path_to_stack = var.users_destination+username+"/"+project_name+"/"+"stack.txt"
+	f = open(path_to_stack,"rb")
+	stack = pickle.load(f)
+	stack.append(element)
+	f = open(path_to_stack,"wb")
+	pickle.dump(stack,f)
+	f.close()
 def what_to_commit(username, project_name):
-    if not have_user_some_lvl_of_rights(username,project_name):
-        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-        return
-    commit(username, project_name)
     os.chdir(var.users_destination + username + '/' + project_name)
     f = open('stack.txt','rb')
     stack = pickle.load(f)
@@ -96,16 +86,15 @@ def what_to_commit(username, project_name):
     choice = int(input())
     if choice:
         m = 0
-        k = 0
-        for changed_file in stack[-1]['changes'].keys():
-            k += 1
-            print('k = ',k,'\tfile_n = ',file_numbers ,'\t k not in file_numbers = ' , k not in file_numbers)
-            if k not in file_numbers:
-                file_to_del_from_stack = changed_file
-                print('to del', file_to_del_from_stack)
-                del (stack[-1]['changes'][file_to_del_from_stack])
-                break
-        #
+        while len(file_numbers) != m:
+            k = 0
+            for changed_file in stack[-1]['changes'].keys():
+                k += 1
+                if k in file_numbers:
+                    file_to_del_from_stack = changed_file
+                    break
+            del (stack[-1]['changes'][file_to_del_from_stack])
+            m += 1
         f = open('stack.txt', 'wb')
         pickle.dump(stack, f)
         f.close()
@@ -115,9 +104,6 @@ def what_to_commit(username, project_name):
         print('Добавление коммита было прервано')
         return
 def del_last_commit(username, project_name):
-    if not have_user_some_lvl_of_rights(username,project_name):
-        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-        return
     global_stack = sc.load_g(project_name)
     local_stack = sc.load_l(username, project_name)
     if local_stack in global_stack:
@@ -150,16 +136,10 @@ dict_command = {
 }
 
 def pre_push(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.push(local_stack,global_stack,project_name)
 def pre_pull(username,project_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
 	local_stack = sc.load_l(username,project_name)
 	global_stack = sc.load_g(project_name)
 	of.pull(local_stack,global_stack,username,project_name)
@@ -184,18 +164,16 @@ def show_projects(username):
 	for project in os.listdir():
 		print(project+'\n')
 	print("End-############################\n")
+
+def show_global_projects():
+	os.chdir(var.global_destination)
+	print("Список проектов:\n")
+	for project in os.listdir():
+		if project != "bin":
+			print(project+'\n')
+	print("End-############################\n")
 def interface(username):
 	while 1:
-		if not os.path.exist(var.administration + 'users_requests.txt'):
-			base_struct = {}
-			f = open('users_requests.txt','wb')
-			pickle.dump(base_struct, f)
-			f.close()
-		if not os.path.exist(var.administration + 'users_rights_for_projects.txt'):
-			base_struct = {}
-			f = open('users_rights_for_projects.txt','wb')
-			pickle.dump(base_struct, f)
-			f.close()
 		print("Вы можете выбрать свой проект(сhoose)")
 		print("создать новый(make)")
 		print("загрузить проект из глобальной директории(load)")
@@ -257,6 +235,7 @@ def interface(username):
 			if choice in ["да", "д", "yes", "y"]:
 				commit(username,project_name)
 			elif choice in ['нет', 'н', 'no', 'n']:
+				commit(username,project_name)
 				what_to_commit(username, project_name)
 			else:
 				print('Ошибка! Для выбора ответа можно использовать: да, д, yes, y, нет, н, no, n')
@@ -282,7 +261,7 @@ def interface(username):
 			if len(command.split()) > 1:
 				log.log(project_name," ".join(command.split()[1:]))
 			else:
-				log.log(project_name,"--simple")
+				log.log(project_name,"simple")
 
 
 
@@ -290,22 +269,6 @@ def interface(username):
 
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
-
-
-
-
-
-
-		elif command == 'add_users_to_prj':
-			uc.add_users_to_prj(username, project_name)
-
-
-
-
-
-
-		elif command == 'del_users_to_prj':
-			uc.del_users_to_prj(username, project_name)
 
 
 

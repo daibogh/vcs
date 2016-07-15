@@ -2,12 +2,13 @@ import pickle
 import getpass
 import os
 import variables as var
+import hashlib as hl
 try:
-	f = open("users.txt",'rb')
+	f = open(var.administration+"/users.txt",'rb')
 	users = pickle.load(f)
 	f.close()
 except:
-	users = {"admin":"admin"}
+	users = {"admin":hl.md5("admin".encode()).hexdigest()}
 	pass
 
 def registration_form():
@@ -19,8 +20,9 @@ def registration_form():
 			break
 		else:
 			print("пароли не совпадают, введите заново\n")
-	users[new_username] = password
-	f = open("users.txt","wb")
+	users[new_username] = hl.md5(password.encode()).hexdigest()
+	os.mkdir(var.users_destination+"/"+new_username)
+	f = open(var.administration+"/users.txt","wb")
 	pickle.dump(users,f)
 	f.close()
 
@@ -38,13 +40,13 @@ def login():
 		else:
 			break
 	while 1:
-		current_password = getpass.getpass("введите пароль: ")
+		current_password = hl.md5(getpass.getpass("введите пароль: ").encode()).hexdigest()
 		if current_password == users[current_username]:
 			try:
-				os.chdir(var.destination + current_username+"/")
+				os.chdir(var.users_destination + "/"+current_username+"/")
 			except:
-				os.mkdir(var.destination + current_username+"/")
-				os.chdir(var.destination + current_username+"/")
+				os.mkdir(var.users_destination + "/"+current_username+"/")
+				os.chdir(var.users_destination + "/"+current_username+"/")
 			print(os.getcwd())
 			print("ok")
 			break

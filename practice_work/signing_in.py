@@ -21,7 +21,11 @@ def registration_form():
 		else:
 			print("пароли не совпадают, введите заново\n")
 	users[new_username] = hl.md5(password.encode()).hexdigest()
-	os.mkdir(var.users_destination+"/"+new_username)
+	try:
+		os.mkdir(var.users_destination+"/"+new_username)
+	except:
+		os.system("rm -Rf " + var.users_destination+"/"+new_username)
+		os.mkdir(var.users_destination+"/"+new_username)
 	f = open(var.administration+"/users.txt","wb")
 	pickle.dump(users,f)
 	f.close()

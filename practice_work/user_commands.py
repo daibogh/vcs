@@ -7,6 +7,7 @@ import py_detour as py_dtour
 import find_changes as find_ch
 import changes_in_global as chingl
 from datetime import datetime
+import create_necessary_files as cnf
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)
@@ -565,7 +566,11 @@ def check_users_requests(username):
 	os.chdir(var.administration)
 	#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
 	#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
-	f = open('users_requests.txt', 'rb')
+	try:
+		f = open('users_requests.txt', 'rb')
+	except:
+		cnf.create_necessary_files()
+		f = open('users_requests.txt', 'rb')
 	users_requests = pickle.load(f)
 	f.close()
 	if username in users_requests.keys():
@@ -645,6 +650,7 @@ def have_user_some_lvl_of_rights(username, project_name, branch):
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
 	f.close()
+	print(obj)
 	if username not in obj[project_name][branch]:
 		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		return 0

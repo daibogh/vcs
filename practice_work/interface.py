@@ -43,7 +43,7 @@ def exit(username):
 	else:
 		return False
 def commit(username,project_name,branch_name):
-	if not uc.have_user_some_lvl_of_rights(username,project_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
 	check = uc.check_updates(username,project_name,branch_name)
@@ -255,7 +255,23 @@ def interface(username):
 		elif command == "commit":
 			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
 			if choice in ["да", "д", "yes", "y"]:
-				commit(username,project_name,branch_name)
+				try:
+					commit(username,project_name,branch_name)
+				except UnboundLocalError:
+					print("у вас еще не выбрана ветка, в которой вы будете работать")
+					# commit(username,project_name,"master")
+					os.chdir(var.users_destination+"/"+username+"/"+project_name)
+					print("доступны такие ветки:")
+					for i in os.listdir():
+						print(i)
+					print("Пожадуйста, выберите одну из предоставленных веток")
+					commit(username,project_name,input())
+					# while 1:
+
+						# try:
+						# 	commit(username,project_name,input())
+						# except:
+						# 	print("такой ветки не существует, попробуйте еще раз")
 			elif choice in ['нет', 'н', 'no', 'n']:
 				what_to_commit(username, project_name)
 			else:

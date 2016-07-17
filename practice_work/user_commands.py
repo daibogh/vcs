@@ -265,187 +265,385 @@ def del_couple_commits(username,project_name,branch_name):
 ################################################	КОММАНДЫ ДЛЯ ПРАВ	################################################	
 def add_users_to_prj(username, project_name):
 	if not have_user_high_lvl_of_rights(username, project_name):
-		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
 		return
 	os.chdir(var.administration)
-	print('Список пользователей:')
-	f = open('users.txt', 'rb')
-	users = pickle.load(f)
-	f.close()
-	f = open('users_rights_for_projects.txt', 'rb')
-	users_rights = pickle.load(f)
-	f.close()
-	for user in users.keys():
-		if user != 'admin' and user != username:
-			print('\t' + user)
-	print('Введите через пробел имена пользователей, которых вы хотите добавить в проект:')
-	print('>', end=' ')
-	users = input().split()  # users это ['Dima', 'Denis']
-	for user in users:  # Удаляем повторяющихся юзеров
-		if users.count(user) != 1:
-			while users.count(user) != 1:
-				users.remove(user)
-	if 'admin' in users:
-		users.remove('admin')
-	f = open('users.txt', 'rb')
-	registered_users = pickle.load(f)
-	f.close()
-	users_for_add = []
-	for user in users:
-		if user in registered_users.keys():
-			users_for_add.append(user)
+	#############################
+	while 1:
+		print('Вы хотите добавить новых пользователей в весь проект? 1 - да; 2 - нет; 3 - выход')
+		while 1:
+			try:
+				choice = int(input())
+				if choice in [1, 2, 3]:
+					break
+				else:
+					print('Такого варианта нет. Пожалуйста, повторите ввод.')
+			except:
+				print('Ошибка. Пожалуйста, повторите ввод.')
+		if choice == 3:
+			print('Программа добавления новых пользователей в проект', project_name, 'была завершена')
+			return
+		print('Список пользователей:')
+		f = open('users.txt', 'rb')
+		users = pickle.load(f)
+		f.close()
+		f = open('users_rights_for_projects.txt', 'rb')
+		users_rights = pickle.load(f)
+		f.close()
+		if choice == 2:
+			print('Ветки проекта', project_name + ':')
+			for cur_branch in users_rights[project_name].keys():
+				print('\t', cur_branch)
+			while 1:
+				print('Выберите ветку, в которую вы хотите добавить новых пользователей:')
+				branch = input()
+				if branch in users_rights[project_name].keys():
+					print('Выбрана ветка', branch)
+					break
+		for user in users.keys():
+			if user != 'admin' and user != username:
+				print('\t' + user)
+		if choice == 1:
+			print('Введите через пробел имена пользователей, которых вы хотите добавить в проект', project_name+':')
+			
 		else:
-			print('Пользователь ' + user + ' не зарегистрирован в vcs')
-		if user in users_rights[project_name]:
-			users_for_add.remove(user)
-	if len(users_for_add) == 0:
-		print('Ни один, из введённых пользователей, не может быть добавлен в проект ' + project_name)
-		return
-	print('Список пользователей для добавления в проект:')
-	for user in users:
-		print('\t', user, end=' ')
-	print()
-	print('Для окончательного добавления нажмите 1, для отмены - 0')
-	choice = int(input())
-	if choice:
-		f = open('users_requests.txt', 'rb')
-		requests = pickle.load(f)
+			print('Введите через пробел имена пользователей, которых вы хотите добавить в ветку', branch, 'проекта', project_name+':')
+		print('>', end=' ')
+		users = input().split()  # users это ['Dima', 'Denis']
+		for user in users:  # Удаляем повторяющихся юзеров
+			if users.count(user) != 1:
+				while users.count(user) != 1:
+					users.remove(user)
+		if 'admin' in users:
+			users.remove('admin')
+		if username in users:
+				users.remove(username)
+		f = open('users.txt', 'rb')
+		registered_users = pickle.load(f)
 		f.close()
-		for user in users_for_add:
-			if user not in requests.keys():
-				requests[user] = []
-			if project_name not in requests[user]:
-				requests[user].append([username, project_name])
+		users_for_add = []		
+
+		for user in users:
+			if user in registered_users.keys():
+				users_for_add.append(user)
 			else:
-				print('Вы уже отправляли приглашение пользователю', user, 'на присоединение к проекту')
-		f = open('users_requests.txt', 'wb')
-		requests = pickle.dump(requests, f)
-		f.close()
-	else:
-		print('Запрос на приглашение новых пользователей был отменён')
-		return
+				print('Пользователь ' + user + ' не зарегистрирован в vcs')
+
+		#users_for_add [dima, denis]
+		#users_for_add_choice_1 {username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
+		if choice == 1:
+			users_for_add_choice_1 = {}
+			isSomeoneForAdd = False
+			for user in users_for_add:
+				users_for_add_choice_1[user] = {}
+				for cur_branch in users_rights[project_name].keys():
+					users_for_add_choice_1[user][cur_branch] = []
+					if  user not in users_rights[project_name][cur_branch]:
+						#users_rights[cur_branch].append(user)
+						users_for_add_choice_1[user][cur_branch].append([username, project_name])
+						isSomeoneForAdd = True
+			if not isSomeoneForAdd:
+				print('Все введённые пользователи уже добавлены в проект ' + project_name)
+				continue
+			print('Вы собираетесь сделать следующие изменения в проекте:')
+			for user in users_for_add:
+				print('Добавить пользователя', user, 'в:')
+				for cur_branch in users_for_add_choice_1[user].keys():
+					print('\tВетка -', cur_branch)
+			while 1:
+				try:
+					print('Для продолжения нажмите 1, для отмены - 2')
+					choice = int(input())
+					if choice == 1 or choice == 2:
+						break
+					else:
+						print('Такого варианта нет. Пожалуйста, повторите ввод.')
+				except:
+					print('Ошибка. Пожалуйста, повторите ввод')
+			if choice == 1:
+				f = open('users_requests.txt', 'rb')
+				users_rec = pickle.load(f)
+				f.close()
+				if user not in users_rec.keys():
+					users_rec[user] = {}
+				for user in users_for_add:
+					for branch in users_for_add_choice_1[user].keys():
+						if branch not in users_rec[user].keys():
+							users_rec[user][branch] = []
+						users_rec[user][branch].append( [username, project_name] )
+				f = open('users_requests.txt', 'wb')
+				pickle.dump(users_rec, f)
+				f.close()
+				print('Добавление было успешно завершено')
+			else:
+				print('Добавление было прервано')
+		else:
+			for user in users_for_add: 
+				if user in users_rights[project_name][branch]:
+					print('Пользователь', user, 'уже состоит в ветке', branch)
+					users_for_add.remove(user)
+			print('Ваш выбор:')
+			for user in users_for_add:
+				print('\t', user)
+			while 1:
+				try:
+					print('Для продолжения нажмите 1, для отмены - 2')
+					choice = int(input())
+					if choice == 1 or choice == 2:
+						break
+					else:
+						print('Такого варианта нет. Пожалуйста, повторите ввод.')
+				except:
+					print('Ошибка. Пожалуйста, повторите ввод')
+			if choice == 1:
+				f = open('users_requests.txt', 'rb')
+				users_rec = pickle.load(f)
+				f.close()
+				for user in users_for_add:
+					users_rec[user][branch].append([username, project_name])
+				f = open('users_requests.txt', 'wb')
+				pickle.dump(users_rec, f)
+				f.close()
+				print('Добавление было успешно завершено')
+			else:
+				print('Добавление было прервано')
+				#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
+				#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
 def del_users_from_prj(username, project_name):
-    if not have_user_high_lvl_of_rights(username, project_name):
-        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-        return
-    f = open('users_rights_for_projects.txt','rb')
-    list_with_users_in_prj = pickle.load(f)
-    f.close()
-    if len(list_with_users_in_prj[project_name]) == 2:
-        print('Вы являетесь единственным участником проекта. Команда удаления участников из проекта '+project_name+' была прервана.')
-        return
-    print('Текущий список участников проекта:')
-    for user in list_with_users_in_prj[project_name][2:]:
-        print('\t', user)
-    print('Введите через пробел имена пользователей, которых вы хотите удалить из проекта:')
-    print('>', end=' ')
-    users = input().split() # users это ['Dima', 'Denis']
-    for user in users: # Удаляем повторяющихся юзеров
-        if users.count(user) != 1:
-            while users.count(user) != 1:
-                users.remove(user)
-    if 'admin' in users:
-        users.remove('admin')
-    if username in users:
-        users.remove(username)
-    users_for_del = []
-    for user in users:
-        if user in list_with_users_in_prj[project_name]:
-            users_for_del.append(user)
-        else:
-            print('Пользователь ' + user + ' не зарегистрирован в vcs')
-    if len(users_for_del) == 0:
-        print('Ни один, из введённых пользователей, не может быть удалён из проекта '+project_name)
-        return
-    print('Список пользователей для удаления из проекта:')
-    for user in users:
-        print('\t',user, end=' ')
-    print('\nДля окончательного удаления нажмите 1, для отмены - 0')
-    choice = int(input())
-    if choice:
-        for user in list_with_users_in_prj[project_name]:
-            if user in users_for_del:
-                list_with_users_in_prj[project_name].remove(user)
-    else:
-        print('Запрос на удаление пользователей был отменён')
-        return
-    f = open('users_rights_for_projects.txt','wb')
-    pickle.dump(list_with_users_in_prj, f)
-    f.close()
-    print('Удаление пользователей прошло успешно')
+	if not have_user_high_lvl_of_rights(username, project_name):
+		print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
+		return
+	os.chdir(var.administration)
+	while 1:
+		print('Вы хотите удалить пользователей из всего проекта? 1 - да; 2 - нет; 3 - выход')
+		while 1:
+			try:
+				choice = int(input())
+				if choice in [1, 2, 3]:
+					break
+				else:
+					print('Такого варианта нет. Пожалуйста, повторите ввод.')
+			except:
+				print('Ошибка. Пожалуйста, повторите ввод.')
+		if choice == 3:
+			print('Программа удаления пользователей из проекта', project_name, 'была завершена')
+			return
+		f = open('users_rights_for_projects.txt','rb')
+		users_rights = pickle.load(f)
+		f.close()
+		isSomeoneForDel = False
+		for branch in users_rights[project_name].keys():
+			if len(users_rights[project_name][branch]) > 2:
+				isSomeoneForDel = True
+		if not isSomeoneForDel:
+			print('Вы являетесь единственным участником проекта. Команда удаления участников из проекта '+project_name+' была прервана.')
+			continue
+		print('Участники проекта:')
+		list_with_users_in_prj = []
+		for branch in users_rights[project_name].keys():
+			for user in users_rights[project_name][branch]:
+				if user not in list_with_users_in_prj:
+					list_with_users_in_prj.append(user)
+		for user in list_with_users_in_prj:
+			print('\t', user)
+		if choice == 1:
+			print('Введите через пробел имена пользователей, которых вы хотите удалить из проекта', project_name+':')
+			print('>', end=' ')
+			users = input().split()  # users это ['Dima', 'Denis']
+			for user in users:  # Удаляем повторяющихся юзеров
+				if users.count(user) != 1:
+					while users.count(user) != 1:
+						users.remove(user)
+			if 'admin' in users:
+				users.remove('admin')
+			if username in users:
+				users.remove(username)
+			f = open('users.txt', 'rb')
+			registered_users = pickle.load(f)
+			f.close()
+			for user in users:
+				if user not in registered_users.keys():
+					print('Пользователь ' + user + ' не зарегистрирован в vcs')
+					users.remove(user)
+					continue
+					isSomeoneForDel = False
+					for branch in users_rights[project_name].keys():
+						if user in users_rights[project_name][branch]:
+							isSomeoneForDel = True
+							break
+					if not isSomeoneForDel:
+						print('Пользователь', user, 'не является участником проекта', project_name)
+						users.remove(user)
+			print('Ваш выбор:')
+			for user in users:
+				print('\t', user)
+			while 1:
+				try:
+					print('Для продолжения нажмите 1, для отмены - 2')
+					choice = int(input())
+					if choice == 1 or choice == 2:
+						break
+					else:
+						print('Такого варианта нет. Пожалуйста, повторите ввод.')
+				except:
+					print('Ошибка. Пожалуйста, повторите ввод')
+			if choice == 1:
+				for branch in users_rights[project_name].keys():
+					if user in users_rights[project_name][branch]:
+						users_rights[project_name][branch].remove(user)
+				f = open('users_rights_for_projects.txt', 'wb')
+				pickle.dump(users_rights, f)
+				f.close()
+				print('Удаление прошло успешно')
+			else:
+				print('Удаление было прервано')
+				continue
+			#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
+			#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
+		else:
+			for branch in users_rights[project_name].keys():
+				if len(users_rights[project_name][branch]) == 2:
+					continue
+				print('Ветка -', branch)
+				for user in users_rights[project_name][branch][2:]:
+					print('\t', user)
+			while 1:
+				print('Выберите ветку, из которой вы хотите удалить пользователей:')
+				branch = input()
+				if branch in users_rights[project_name].keys():
+					print('Выбрана ветка', branch)
+					break
+			print('Введите через пробел имена пользователей, которых вы хотите удалить из ветки', branch, 'проекта', project_name+':')
+			print('>', end=' ')
+			users = input().split()  # users это ['Dima', 'Denis']
+			for user in users:  # Удаляем повторяющихся юзеров
+				if users.count(user) != 1:
+					while users.count(user) != 1:
+						users.remove(user)
+			if 'admin' in users:
+				users.remove('admin')
+			if username in users:
+				users.remove(username)
+			f = open('users.txt', 'rb')
+			registered_users = pickle.load(f)
+			f.close()	
+			for user in users:
+				if user not in registered_users.keys():
+					print('Пользователь ' + user + ' не зарегистрирован в vcs')
+					users.remove(user)
+					continue
+				if user not in users_rights[project_name][branch]:
+					print('Пользователь', user, 'не является участником ветки', branch)
+					users.remove(user)
+					continue
+				users_rights[project_name][branch].remove(user)
+
+			print('Ваш выбор:')
+			for user in users:
+				print('\tВетка -', branch, 'пользователь -', user)
+			while 1:
+				try:
+					print('Для продолжения нажмите 1, для отмены - 2')
+					choice = int(input())
+					if choice == 1 or choice == 2:
+						break
+					else:
+						print('Такого варианта нет. Пожалуйста, повторите ввод.')
+				except:
+					print('Ошибка. Пожалуйста, повторите ввод')
+			if choice == 1:
+				f = open('users_rights_for_projects.txt', 'wb')
+				pickle.dump(users_rights, f)
+				f.close()
+				print('Удаление прошло успешно')
+			else:
+				print('Удаление было прервано')
+				continue
+				#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
+				#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
 def check_users_requests(username):
-    os.chdir(var.administration)
-    f = open('users_requests.txt', 'rb')
-    users_requests = pickle.load(f)
-    f.close()
-    if username in users_requests.keys():
-        print('У вас есть новые приглашения в проект/проекты\n')
-        counter = 0
-        for requset in users_requests[username]:
-            counter += 1
-            print('\t',str(counter)+':', requset[0], 'пригласил вас в проект', requset[1])
-        while 1:
-            try:
-                answer = [int(i) for i in input('Введите через пробел номера проектов, в которые вы вступите(все остальные приглашения будут удалены)\n>').split()]
-                break
-            except:
-                print('Ошибка ввода. Пожалуйста, введите корректные номера проектов')
-        for i in answer:
-            if i < 1 or i > counter:
-                answer.remove(i)
-        counter = 0
-        f = open('users_rights_for_projects.txt','rb')
-        users_rights = pickle.load(f)
-        f.close()
-        print('Ваш выбор:')
-        for requset in users_requests[username]:
-            counter += 1
-            if counter in answer:
-                print('\tВладелец проекта:', requset[0], '\tНазвание проекта:', requset[1])
-        while 1:
-            try:
-                choice = int(input('Для продолжения нажмите 1, для отмены - 0\n>'))
-                break
-            except:
-                print('Ошибка ввода. Пожалуйста, повторите ввод ещё раз, следуя инструкциям.')
-        if choice:
-            counter = 0
-            for requset in users_requests[username]:
-                counter += 1
-                print('request ==',requset)
-                if counter in answer:
-                    users_rights[requset[1]].append(username)
-            del(users_requests[username])
-            f = open('users_requests.txt','wb')
-            pickle.dump(users_requests, f)
-            f.close()
-            f = open('users_rights_for_projects.txt', 'wb')
-            pickle.dump(users_rights, f)
-            f.close()
-            print('Обработка приглашений завершена')
-        ################################################### вставить сюда ф-цию клпирования проекта из глобала в локал
-    else:
-        print('У вас нет новых приглашений в проекты')
+	os.chdir(var.administration)
+	#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
+	#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
+	f = open('users_requests.txt', 'rb')
+	users_requests = pickle.load(f)
+	f.close()
+	if username in users_requests.keys():
+		print('У вас есть новые приглашения в проект/проекты\n')
+		counter = 0
+		for branch in users_requests[username].keys():
+			for requset in users_requests[username][branch]:
+				counter += 1
+				print('\t',str(counter)+':', requset[0], 'пригласил вас в проект', requset[1], 'в ветку', branch)
+		while 1:
+			try:
+				answer = [int(i) for i in input('Введите через пробел номера проектов, в которые вы вступите(все остальные приглашения будут удалены)\n>').split()]
+				break
+			except:
+				print('Ошибка ввода. Пожалуйста, введите корректные номера приглашений')
+		for i in answer:
+			if i < 1 or i > counter:
+				answer.remove(i)
+		counter = 0
+		f = open('users_rights_for_projects.txt','rb')
+		users_rights = pickle.load(f)
+		f.close()
+		print('Ваш выбор:')
+		for branch in users_requests[username].keys():
+			for request in users_requests[username][branch]:
+				counter += 1
+				if counter in answer:
+					print('\tВладелец проекта:', request[0], '\tНазвание проекта:', request[1], '\tВетка:', branch)
+		while 1:
+			try:
+				choice = int(input('Для продолжения нажмите 1, для отмены - 0\n>'))
+				if choice in [0, 1]:
+					break
+				else:
+					print('Такой команды нет. Пожалуйста, повторите ввод.')
+			except:
+				print('Ошибка ввода. Пожалуйста, повторите ввод ещё раз, следуя инструкциям.')
+		if choice:
+			counter = 0
+			for branch in users_requests[username].keys():
+				for request in users_requests[username][branch]:
+					counter += 1
+					print('request ==',requset)
+					if counter in answer:
+						users_rights[request[1]][branch].append(username)
+			del(users_requests[username])
+			f = open('users_requests.txt','wb')
+			pickle.dump(users_requests, f)
+			f.close()
+			f = open('users_rights_for_projects.txt', 'wb')
+			pickle.dump(users_rights, f)
+			f.close()
+			print('Обработка приглашений завершена')
+		################################################### вставить сюда ф-цию клпирования проекта из глобала в локал
+	else:
+		print('У вас нет новых приглашений в проекты')
 def have_user_high_lvl_of_rights(username, project_name):
 	os.chdir(var.administration)
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
 	f.close()
-	if obj[project_name][0] != username and obj[project_name][1] != username:
+	if obj[project_name]['master'][0] != username and obj[project_name]['master'][1] != username:
 		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		return 0
 	else:
 		return 1
-def have_user_some_lvl_of_rights(username, project_name):
-    os.chdir(var.administration)
-    f = open('users_rights_for_projects.txt', 'rb')
-    obj = pickle.load(f)
-    f.close()
-    if username not in obj[project_name]:
-        print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-        return 0
-    else:
-        return 1
+def have_user_some_lvl_of_rights(username, project_name, branch):
+	#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt', 'rb')
+	obj = pickle.load(f)
+	f.close()
+	if username not in obj[project_name][branch]:
+		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		return 0
+	else:
+		return 1
+########################################################################################################################
 '''
 def copy_from_GL_to_LC(username, project_name):
 	os.mkdir(var.local_destination+username + '/' + project_name+'/')

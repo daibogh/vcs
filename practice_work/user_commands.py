@@ -775,3 +775,4 @@ def merge(username,project_name,branch_name):
 			
 	intf.commit(username,project_name,'master')
 	intf.pre_push(username,project_name,'master')
+	return

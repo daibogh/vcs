@@ -191,6 +191,7 @@ def show_projects(username):
 		for branch in obj[project].keys():
 			if username in obj[project][branch]:
 				print(project+"--"+branch+"\n")
+	print()			
 
 def show_loc_projects(username):
 	os.chdir(var.users_destination+"/"+username)
@@ -204,6 +205,7 @@ def show_loc_projects(username):
 		for branch in obj[project].keys():
 			if username in obj[project][branch] and project in prj_list:
 				print(project+"--"+branch+"\n")
+	print()			
 
 
 
@@ -229,17 +231,25 @@ def interface(username):
 			print("Выберите проект")
 			show_loc_projects(username)
 			project_name=input(">> ")
+			print("Выберите ветвь")
+			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
-			if project_name in prj_list:
+			if project_name in prj_list and uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
 				break
+			elif project_name in prj_list and not uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
+				pass
+			elif project_name not in prj_list and uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
+				print("В вашей локальной папке нет копии данного проекта. Чтобы загрузить его воспользуйтесь функцией load.")
 			else:
-				print("у вас нет такого проекта")
-				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
+				print("У вас нет такого проекта")
+				if input("Вы хотите создать проект?(д/н)\n>> ").lower() in ["да", "д", "yes", "y"]:
 					project_name=mk_prjct(username)
+					branch_name="master"
 					break
 		elif command == "make":
 			project_name=mk_prjct(username)
+			branch_name="master"
 			break
 		elif command == "load":
 			print("Выберите проект")
@@ -255,8 +265,13 @@ def interface(username):
 				return
 		else:
 			print("Такой команды нет.")
-	print("Вы выбрали проект </"+project_name+"/>")
-	# branch_name = 'master'
+	print("Вы выбрали проект </"+project_name+"/>\n Ветвь </"+branch_name+"/>")
+	while 1:		
+		branch_name=input("\n>> ")
+		if have_user_some_lvl_of_rights(username, project_name, branch_name):
+			break
+			
+
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")

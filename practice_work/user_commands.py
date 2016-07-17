@@ -705,6 +705,7 @@ def make_branch(username,project_name,branch_name):
 	f = open('users_rights_for_projects.txt', 'wb') 
 	pickle.dump(st, f) 
 	f.close()
+	return branch_name
 
 
 def del_dir(_dir):

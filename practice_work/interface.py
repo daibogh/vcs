@@ -235,18 +235,12 @@ def interface(username):
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
-			if project_name in prj_list and uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
-				break
-			elif project_name in prj_list and not uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
-				pass
-			elif project_name not in prj_list and uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
-				print("В вашей локальной папке нет копии данного проекта. Чтобы загрузить его воспользуйтесь функцией load.")
-			else:
-				print("У вас нет такого проекта")
-				if input("Вы хотите создать проект?(д/н)\n>> ").lower() in ["да", "д", "yes", "y"]:
-					project_name=mk_prjct(username)
-					branch_name="master"
+			if project_name in prj_list:
+				if uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
 					break
+			else:
+				print("В вашей локальной папке нет данного проекта, попробуйте загрузить его или создать новый.\n")
+
 		elif command == "make":
 			project_name=mk_prjct(username)
 			branch_name="master"
@@ -260,17 +254,14 @@ def interface(username):
 			if uc.make_project_local(username, project_name,branch_name) != 0:
 				pre_pull(username,project_name,branch_name)
 				break
+			else: 
+				print("Такого проекта или ветки не существует. Попробуйсте создать его.\n")	
 		elif command == "exit":
 			if exit(username):
 				return
 		else:
 			print("Такой команды нет.")
-	print("Вы выбрали проект </"+project_name+"/>\n Ветвь </"+branch_name+"/>")
-	while 1:		
-		branch_name=input("\n>> ")
-		if have_user_some_lvl_of_rights(username, project_name, branch_name):
-			break
-			
+	print("Вы выбрали проект </"+project_name+"/>\nВетвь </"+branch_name+"/>")			
 
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:

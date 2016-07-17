@@ -661,7 +661,7 @@ def copy_from_GL_to_LC(username, project_name):
 
 def make_project_local(username, project_name,branch_name):
 	global_stack=sc.load_g(project_name,branch_name)
-	if len(global_stack) == 0:
+	if global_stack == 0:
 		return 0
 	try:
 		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")

@@ -1,5 +1,5 @@
 def changes_lines(old_file, new_file):
-	print(old_file,new_file)
+	#print(old_file,new_file)
 	mass_of_changes={}
 	oldFile=open(old_file,'r')
 	newFile=open(new_file,'r')

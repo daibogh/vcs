@@ -13,7 +13,7 @@ def global_changes(user_name, project_name,branch_name,gl_dest,lc_dest):
 	os.chdir(gl_dest)
 	glob_files=dt.ret_det()
 	os.chdir(lc_dest)
-	print(lc_dest)
+	#print(lc_dest)
 	loc_files=dt.ret_det()
 	for i in range(len(glob_files)):
 		if glob_files[i] not in loc_files:
@@ -21,7 +21,7 @@ def global_changes(user_name, project_name,branch_name,gl_dest,lc_dest):
 			changes[path+glob_files[i]]=["-",]
 
 	for i in range(len(loc_files)):
-		print("loc_files[i] = ",loc_files[i])
+		#print("loc_files[i] = ",loc_files[i])
 		if loc_files[i] in [ ".DS_Store",".stack.txt"]:
 			continue
 		if loc_files[i] not in glob_files:
@@ -40,7 +40,7 @@ def global_changes(user_name, project_name,branch_name,gl_dest,lc_dest):
 		elif len(fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])):
 			path = project_name + '/' + branch_name + "/" + os.getcwd().split(branch_name)[-1]
 			changes[path+"/"+loc_files[i]]=["...",fc.changes_lines(gl_dest+"/"+loc_files[i], lc_dest+"/"+loc_files[i])]
-	print(changes)
+	#print(changes)
 	return(changes)
 			
 if "__name__" == "__main__":

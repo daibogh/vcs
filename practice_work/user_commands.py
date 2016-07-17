@@ -7,6 +7,7 @@ import py_detour as py_dtour
 import find_changes as find_ch
 import changes_in_global as chingl
 from datetime import datetime
+import interface as intf
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)
@@ -87,32 +88,16 @@ def make_project(username,project_name):
 	try:
 		os.mkdir(var.global_destination+project_name+'/')
 	except:
-		print("такое название уже есть, назвать по-другому или создать заново проект с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
+		print("Такое название уже есть, назвать по-другому или удалить проект с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
 		while 1:
-			print("ha")
-			try:
-				if int(input()) == 1:
-					new_project_name = input("введите новое название проекта\n")
-					make_project(username,new_project_name)
-					return 0
-				elif int(input()) == 2:
-					# shutil.rmtree('/folder_name')
-					shutil.rmtree(var.global_destination+project_name+'/')
-					try:
-						shutil.rmtree(var.users_destination+"/"+username+"/"+project_name+"/")
-						make_project(username,project_name)
-						return 0
-					except:
-						print("error!")
-						return 1
-						pass
-					break
-			except:
-				pass
-	try:			
-		os.mkdir(var.global_destination+project_name+'/' + 'master')
-	except:
-		shutil.rmtree(var.global_destination+project_name+'/' + 'master')	
+			if int(input(">> ")) == 1:
+				new_project_name = input("введите новое название проекта\n")
+				make_project(username,new_project_name)
+				return 0
+			elif int(input(">> ")) == 2:
+				del_project(username, project_name)
+				return 0			
+	os.mkdir(var.global_destination+project_name+'/' + 'master')	
 	os.chdir(var.global_destination+project_name+'/' + 'master')
 	global_stack = sc.make_stack(username,project_name)
 	f = open(".stack.txt","wb")
@@ -122,12 +107,11 @@ def make_project(username,project_name):
 	try:
 		os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/')
 	except:
-		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name +'/')
+		os.chdir(var.users_destination+"/"+username+"/")
+		os.rename(project_name, project_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
+		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
 
-	try:
-		os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/' + 'master')
-	except:
-		shutil.rmtree(var.users_destination+"/"+username+"/"+project_name +'/' + 'master')
+	os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/' + 'master')
 	os.chdir(var.users_destination+"/"+username+"/"+project_name +'/' + 'master')
 	f = open(".stack.txt","wb")
 	pickle.dump(local_stack,f)
@@ -137,7 +121,7 @@ def make_project(username,project_name):
 	f = open('users_rights_for_projects.txt', 'rb')
 	user_rights = pickle.load(f)
 	f.close()
-	users_for_add = {project_name:['admin', username]}
+	users_for_add = {project_name:{'master':['admin', username]}}
 	user_rights.update(users_for_add)
 	f = open('users_rights_for_projects.txt', 'wb')
 	pickle.dump(user_rights, f)
@@ -264,7 +248,7 @@ def del_couple_commits(username,project_name,branch_name):
 	sc.dump_l(username,project_name,pushed_commits,branch_name)
 ################################################	КОММАНДЫ ДЛЯ ПРАВ	################################################	
 def add_users_to_prj(username, project_name):
-	if not have_user_high_lvl_of_rights(username, project_name):
+	if not have_user_high_lvl_of_rights(username, project_name, 'master'):
 		print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
 		return
 	os.chdir(var.administration)
@@ -619,7 +603,8 @@ def check_users_requests(username):
 			pickle.dump(users_rights, f)
 			f.close()
 			print('Обработка приглашений завершена')
-		################################################### вставить сюда ф-цию клпирования проекта из глобала в локал
+		if make_project_local(username, request[1],branch) != 0:
+				intf.pre_pull(username,request[1],branch)
 	else:
 		print('У вас нет новых приглашений в проекты')
 def have_user_high_lvl_of_rights(username, project_name, branch):
@@ -665,13 +650,15 @@ def copy_from_GL_to_LC(username, project_name):
 
 def make_project_local(username, project_name,branch_name):
 	global_stack=sc.load_g(project_name,branch_name)
-	if global_stack == 0:
+	if len(global_stack) == 0:
 		return 0
 	try:
 		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
 	except:
-		return
-	f = open(var.users_destination+username+"/"+project_name+"/stack.txt","wb")
+		del_dir(var.users_destination+"/"+username+"/"+project_name)
+		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
+	os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/"+branch_name+"/")	
+	f = open(var.users_destination+username+"/"+project_name+"/"+branch_name+"/.stack.txt","wb")
 	pickle.dump([global_stack[0]],f)
 	f.close()
 	return 
@@ -682,34 +669,57 @@ def make_branch(username,project_name,branch_name):
 	try:
 		os.mkdir(gl_path)
 	except:
-		print("такое название уже есть, назвать по-другому или создать заново ветку с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
+		print("такое название уже есть, назвать по-другому или удалить ветку с данным именем?\n1-выбрать другое имя;\n2-удалить ветку;")
 		while 1:
-			try:
-				if int(input()) == 1:
-					new_branch_name = input("введите новое название ветки\n")
-					make_branch(username,project_name,new_branch_name)
-					return 0
-				elif int(input()) == 2:
-					shutil.rmtree(gl_path)
-					try:
-						shutil.rmtree(gl_path)
-						make_branch(username,project_name,branch_name)
-						return 0
-					except:
-						print("error!")
-						return 1
-						pass
-					break
-			except:
-				pass
-	lc_path = var.users_destination + username + '/' + project_name + '/' + branch_name
+			if int(input(">> ")) == 1:
+				new_branch_name = input("введите новое название ветки\n")
+				make_branch(username,project_name,new_branch_name)
+				return 0
+			elif int(input(">> ")) == 2:
+				del_branch(username, project_name, branch_name)
+	lc_path = var.users_destination + username + '/' + project_name+'/'+branch_name
 	f = open(gl_path + '/' + '.stack.txt','wb')
 	pickle.dump(stack_struct,f)
 	f.close()
 	try:			
 		os.mkdir(lc_path)
 	except:
-		shutil.rmtree(lc_path)
+		os.chdir(var.users_destination+"/"+username+"/"+project_name)
+		os.rename(branch_name, branch_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
+		os.mkdir(lc_path)
 	f = open(lc_path + '/' + '.stack.txt','wb')
 	pickle.dump(stack_struct,f)
 	f.close()
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt','rb') 
+	st = pickle.load(f) 
+	f.close() 
+	st[project_name][branch_name] = ['admin', st[project_name]['master'][1], username] 
+	f = open('users_rights_for_projects.txt', 'wb') 
+	pickle.dump(st, f) 
+	f.close()
+
+
+def del_dir(_dir):
+	os.chdir(_dir)
+	py_dtour.go_up()
+	directory = _dir.split("/")[-1]
+	os.system("rm -Rf "+directory)
+
+
+def del_project(username, project_name):
+	if have_user_high_lvl_of_rights(username, project_name, "master"):
+			print("Вы уверены, что хотите удалить проект </"+project_name+"/>?")
+			if input(">> ").lower() in ["да", "д", "yes", "y"]:
+				del_dir(var.global_destination+"/"+project_name)
+			else: 
+				return	
+
+
+def del_branch(username, project_name, branch_name):
+	if have_user_high_lvl_of_rights(username, project_name, branch_name):
+			print("Вы уверены, что хотите удалить ветку </"+branch_name+"/> в проекте </"+project_name+"/>?")
+			if input(">> ").lower() in ["да", "д", "yes", "y"]:
+				del_dir(var.global_destination+"/"+project_name+"/"+branch_name)
+			else: 
+				return	

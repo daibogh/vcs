@@ -38,7 +38,7 @@ def mk_prjct(username):
 	uc.make_project(username,prj_name)
 	return prj_name
 def exit(username):
-	if input("Вы уверены, что хотите выйти из текущей сессии пользователя </"+username+"/>?(д/н) ").lower() in ["yes","да","y","д"]:
+	if input("Вы уверены, что хотите выйти из текущей сессии пользователя </"+username+"/>?(д/н) \n>>").lower() in ["yes","да","y","д"]:
 		return True
 	else:
 		return False
@@ -178,11 +178,33 @@ def del_last_commit(username, project_name,branch_name):
             sc.dump_l(username, project_name, local_stack,branch_name)
             print("удаление прошло успешно")
             return 0
+
 def show_projects(username):
-	os.chdir(var.users_destination+username+"/")
-	print("список доступных вам проектов:  \n")
-	for project in os.listdir():
-		print(project+'\n')
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt', 'rb')
+	obj = pickle.load(f)
+	f.close()
+	print("Cписок доступных вам проектов для загрузки:  \n")
+	for project in obj.keys():
+		for branch in obj[project].keys():
+			if username in obj[project][branch]:
+				print(project+"--"+branch+"\n")
+
+def show_loc_projects(username):
+	os.chdir(var.users_destination+"/"+username)
+	prj_list=os.listdir()
+	os.chdir(var.administration)
+	f = open('users_rights_for_projects.txt', 'rb')
+	obj = pickle.load(f)
+	f.close()
+	print("Cписок доступных вам проектов:  \n")
+	for project in obj.keys():
+		for branch in obj[project].keys():
+			if username in obj[project][branch] and project in prj_list:
+				print(project+"--"+branch+"\n")
+
+
+
 	print("End-############################\n")
 def interface(username):
 	while 1:
@@ -203,7 +225,7 @@ def interface(username):
 		command=input(">> ")
 		if command == "choose":
 			print("Выберите проект")
-			show_projects(username)
+			show_loc_projects(username)
 			project_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
@@ -219,10 +241,12 @@ def interface(username):
 			break
 		elif command == "load":
 			print("Выберите проект")
-			show_global_projects()
+			show_projects(username)
 			project_name=input(">> ")
+			print("Выберите ветку")
+			branch_name=input(">> ")
 			if uc.make_project_local(username, project_name,branch_name) != 0:
-				pre_pull(username,project_name)
+				pre_pull(username,project_name,branch_name)
 				break
 		elif command == "exit":
 			if exit(username):
@@ -234,10 +258,10 @@ def interface(username):
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")
-		if command == "make project":
+		if command == "make_project":
 			project_name=mk_prjct(username)
 			print("Вы выбрали проект </"+project_name+"/>")
-		elif command == "set project":
+		elif command == "set_project":
 			project_name = input("введите название проекта\n")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
@@ -304,8 +328,8 @@ def interface(username):
 
 
 
-		elif command == 'del_users_to_prj':
-			uc.del_users_to_prj(username, project_name)
+		elif command == 'del_users_from_prj':
+			uc.del_users_from_prj(username, project_name)
 
 
 
@@ -336,7 +360,7 @@ def interface(username):
 			branch_name=input(">> ")
 			uc.make_branch(username,project_name,branch_name)
 			print("Вы выбрали ветку </"+branch_name+"/>")
-		elif command == "set branch":
+		elif command == "set_branch":
 			print("Введите название ветки")
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/"+project_name+'/')

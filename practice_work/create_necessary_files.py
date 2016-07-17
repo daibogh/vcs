@@ -10,3 +10,4 @@ def create_necessary_files():
     pickle.dump(base_struct, f2)
     f1.close()
     f2.close()
+create_necessary_files()    

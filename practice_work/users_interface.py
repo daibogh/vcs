@@ -11,9 +11,9 @@ def users_interface():
 		print("Вы авторизировались как </"+username+"/>.")
 		uc.check_users_requests(username)
 		intf.interface(username)
-		if input("Вы хотите сменить пользователя?(д/н) ").lower() in ["yes","да","y","д"]:
+		if input("Вы хотите сменить пользователя?(д/н) \n>>").lower() in ["yes","да","y","д"]:
 			continue
-		elif input("Вы хотите выйти из системы?(д/н) ").lower() in ["yes","да","y","д"]:
+		elif input("Вы хотите выйти из системы?(д/н) \n>>").lower() in ["yes","да","y","д"]:
 			sys.exit()
 
 def main():

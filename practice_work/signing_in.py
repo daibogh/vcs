@@ -20,6 +20,7 @@ def registration_form():
 			break
 		else:
 			print("пароли не совпадают, введите заново\n")
+	print()		
 	users[new_username] = hl.md5(password.encode()).hexdigest()
 	os.mkdir(var.users_destination+"/"+new_username)
 	f = open(var.administration+"/users.txt","wb")
@@ -35,7 +36,7 @@ def login():
 		current_username = input("введите имя пользователя: ")
 		if current_username not in users.keys():
 			print("пользователь </"+current_username+ "/> еще не был  зарегистрирован")
-			if input("хотите ли зарегистрировать нового пользователя?(д/н)\n").lower() in ["yes","да","y","д"]:
+			if input("хотите ли зарегистрировать нового пользователя?(д/н)\n>>").lower() in ["yes","да","y","д"]:
 				registration_form()
 		else:
 			break

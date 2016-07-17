@@ -736,7 +736,7 @@ def del_branch(username, project_name, branch_name):
 			else: 
 				return	
 
-def merge(username,project_name,branch_name):
+def merge(username,project_name,branch_name):	
 	br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
 	master_dest = var.users_destination + username + '/' + project_name + '/' + 'master'
 	changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
@@ -775,8 +775,8 @@ def merge(username,project_name,branch_name):
 			if flag == True:
 				os.remove(master_dest + "/" + element)	
 				os.chdir(master_dest)
-				os.rename(element[2:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
-			
+				os.rename(element.split('/')[-1][:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
+
 	intf.commit(username,project_name,'master')
 	intf.pre_push(username,project_name,'master')
 	return

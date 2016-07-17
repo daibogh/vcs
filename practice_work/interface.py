@@ -329,9 +329,9 @@ def interface(username):
 
 		elif "log" in command:
 			if len(command.split()) > 1:
-				log.log(project_name," ".join(command.split()[1:]))
+				log.log(project_name," ".join(command.split()[1:]), branch_name)
 			else:
-				log.log(project_name,"--simple")
+				log.log(project_name,"--simple", branch_name)
 
 
 

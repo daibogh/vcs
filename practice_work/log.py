@@ -5,9 +5,10 @@ def pre_log(project_name):
 	if input().split()[0] == "log":
 		log(" ".join(input().split()[1:]))
 
-def log(project_name, argument):
-	global_stack  = sc.load_g(project_name)
+def log(project_name, argument, branch_name):
+	global_stack  = sc.load_g(project_name, branch_name)
 	if argument == "--simple":
+		print("</"+branch_name+"/>")
 		for commit in global_stack:
 			print("#####################################################################")
 			print(commit["date-time"])
@@ -22,6 +23,7 @@ def log(project_name, argument):
 							print("\t"+str(lines)+") "+"["+commit["changes"][element][1][lines][0]+"]"+": "+commit["changes"][element][1][lines][1][:-1])
 			print("#####################################################################")
 	elif argument == "--name-only":
+		print("</"+branch_name+"/>")
 		for commit in global_stack:
 			print("#####################################################################")
 			print(commit["date-time"])
@@ -29,6 +31,7 @@ def log(project_name, argument):
 				print("["+commit["changes"][element][0]+"]",element,sep = " --- ")
 			print("#####################################################################")
 	elif argument == "--reverse":
+		print("</"+branch_name+"/>")
 		for commit in reversed(global_stack):
 			print("#####################################################################")
 			print(commit["date-time"])
@@ -43,6 +46,7 @@ def log(project_name, argument):
 							print("\t"+str(lines)+") "+"["+commit["changes"][element][1][lines][0]+"]"+": "+commit["changes"][element][1][lines][1][:-1])
 			print("#####################################################################")
 	elif argument.split()[0] == "--after":
+		print("</"+branch_name+"/>")
 		if len(argument.split())<=1:
 			print("Вы не ввели дату-время. Наберите help, чтобы посмотреть образец.")
 			return
@@ -81,6 +85,7 @@ def log(project_name, argument):
 								print("\t"+str(lines)+") "+"["+commit["changes"][element][1][lines][0]+"]"+": "+commit["changes"][element][1][lines][1][:-1])
 				print("#####################################################################")
 	elif argument.split()[0] == "--before":
+		print("</"+branch_name+"/>")
 		if len(argument.split())<=1:
 			print("Вы не ввели дату-время. Наберите help, чтобы посмотреть образец.")
 			return
@@ -119,6 +124,7 @@ def log(project_name, argument):
 								print("\t"+str(lines)+") "+"["+commit["changes"][element][1][lines][0]+"]"+": "+commit["changes"][element][1][lines][1][:-1])
 				print("#####################################################################")
 	elif argument.split()[0] == "--author":
+		print("</"+branch_name+"/>")
 		if len(argument.split())<=1:
 			print("Вы не ввели имя юзера. Наберите help, чтобы посмотреть образец.")
 			return

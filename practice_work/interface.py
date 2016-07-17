@@ -152,7 +152,7 @@ dict_command = {
 }
 
 def pre_push(username,project_name,branch_name):
-	if not uc.have_user_some_lvl_of_rights(username,project_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
 	local_stack = sc.load_l(username,project_name,branch_name)
@@ -293,9 +293,9 @@ def interface(username):
 						print(i)
 					print("Пожадуйста, выберите одну из предоставленных веток")
 					while 1:
-						current_branch = input()
-						if current_branch in mass_of_br:
-							commit(username,project_name,current_branch)
+						branch_name = input()
+						if branch_name in mass_of_br:
+							commit(username,project_name,branch_name)
 							break
 						else:
 							print("такой ветки нет!")

@@ -386,6 +386,10 @@ def add_users_to_prj(username, project_name):
 				users_rec = pickle.load(f)
 				f.close()
 				for user in users_for_add:
+					if user not in users_rec.keys():
+						users_rec[user] = {}
+					if branch not in users_rec[user].keys():
+						users_rec[user][branch] = []
 					users_rec[user][branch].append([username, project_name])
 				f = open('users_requests.txt', 'wb')
 				pickle.dump(users_rec, f)

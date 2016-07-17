@@ -51,7 +51,9 @@ def commit(username,project_name,branch_name):
 		element = {}
 		element["user"] = username
 		element["date-time"] = datetime.now()
-		element["changes"]=chingl.global_changes(username,project_name,branch_name)
+		gl_dest=var.global_destination+"/"+project_name + '/' + branch_name + '/'
+		lc_dest=var.users_destination+"/"+username+"/"+project_name + '/' + branch_name + '/'
+		element["changes"]=chingl.global_changes(username,project_name,branch_name,gl_dest,lc_dest)
 		if element["changes"]=={}:
 			print("Не было внесено никаких изменений")
 			return
@@ -228,9 +230,9 @@ def interface(username):
 			if exit(username):
 				return
 		else:
-			print("Такой команды нет.")		
-
+			print("Такой команды нет.")
 	print("Вы выбрали проект </"+project_name+"/>")
+	branch_name = 'master'
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")
@@ -352,7 +354,7 @@ def interface(username):
 			branch_name=input(">> ")
 			uc.make_branch(username,project_name,branch_name)
 			print("Вы выбрали ветку </"+branch_name+"/>")
-		elif command == "set branch":
+		elif command == "change_branch":
 			print("Введите название ветки")
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/"+project_name+'/')
@@ -365,6 +367,9 @@ def interface(username):
 					branch_name=uc.make_branch(username,project_name,branch_name)
 					print("Вы выбрали ветку </"+branch_name+"/>")
 
+
+		elif command == 'merge':
+			uc.merge(username,project_name,branch_name)
 
 
 		else:

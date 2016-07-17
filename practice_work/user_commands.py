@@ -636,7 +636,7 @@ def have_user_some_lvl_of_rights(username, project_name, branch):
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
 	f.close()
-	print(obj)
+	#print(obj)
 	if username not in obj[project_name][branch]:
 		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		return 0

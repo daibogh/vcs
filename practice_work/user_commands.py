@@ -622,16 +622,23 @@ def check_users_requests(username):
 		################################################### вставить сюда ф-цию клпирования проекта из глобала в локал
 	else:
 		print('У вас нет новых приглашений в проекты')
-def have_user_high_lvl_of_rights(username, project_name):
+def have_user_high_lvl_of_rights(username, project_name, branch):
 	os.chdir(var.administration)
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
 	f.close()
-	if obj[project_name]['master'][0] != username and obj[project_name]['master'][1] != username:
-		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		return 0
+	if branch == 'master':
+		if obj[project_name]['master'][0] != username and obj[project_name]['master'][1] != username:
+			print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+			return 0
+		else:
+			return 1
 	else:
-		return 1
+		if obj[project_name][branch][2] != username:
+			print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+			return 0
+		else:
+			return 1
 def have_user_some_lvl_of_rights(username, project_name, branch):
 	#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
 	os.chdir(var.administration)

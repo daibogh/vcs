@@ -764,14 +764,13 @@ def merge(username,project_name,branch_name):
 				else:
 					f_new.write(changes[path][1][line+1][2])
 					flag = False
-	
-			if flag == True:
-				os.remove(master_dest + "/" + element)	
-				f_new.close()
-				os.chdir(master_dest)
-				os.rename(element[2:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
 			f_new.close()
 			f_br.close()
 			f_mr.close()
+			if flag == True:
+				os.remove(master_dest + "/" + element)	
+				os.chdir(master_dest)
+				os.rename(element[2:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
+			
 	intf.commit(username,project_name,'master')
 	intf.pre_push(username,project_name,'master')

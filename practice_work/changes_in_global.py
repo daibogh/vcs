@@ -7,16 +7,14 @@ def main():
 	global_changes("dima", "project1")
 	return 0
 
-def global_changes(user_name, project_name,branch_name):
+def global_changes(user_name, project_name,branch_name,gl_dest,lc_dest):
 
 	changes={}
-	gl_dest=var.global_destination+"/"+project_name + '/' + branch_name + '/'
 	os.chdir(gl_dest)
-	glob_files=dt.start_detour()
-	lc_dest=var.users_destination+"/"+user_name+"/"+project_name + '/' + branch_name + '/'
+	glob_files=dt.ret_det()
 	os.chdir(lc_dest)
 	print(lc_dest)
-	loc_files=dt.start_detour()
+	loc_files=dt.ret_det()
 	for i in range(len(glob_files)):
 		if glob_files[i] not in loc_files:
 			path = project_name + '/' + branch_name + "/"+ os.getcwd().split(branch_name)[-1]

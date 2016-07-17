@@ -6,8 +6,10 @@ import stack_commands as sc
 import py_detour as py_dtour
 import find_changes as find_ch
 import changes_in_global as chingl
+import overwriting_files as ovf
 from datetime import datetime
 import interface as intf
+import create_necessary_files as cnf
 # def commit(username):
 # 	stack = get_stack()
 # 	stack.append(updates)
@@ -549,7 +551,11 @@ def check_users_requests(username):
 	os.chdir(var.administration)
 	#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
 	#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
-	f = open('users_requests.txt', 'rb')
+	try:
+		f = open('users_requests.txt', 'rb')
+	except:
+		cnf.create_necessary_files()
+		f = open('users_requests.txt', 'rb')
 	users_requests = pickle.load(f)
 	f.close()
 	if username in users_requests.keys():
@@ -630,6 +636,7 @@ def have_user_some_lvl_of_rights(username, project_name, branch):
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
 	f.close()
+	print(obj)
 	if username not in obj[project_name][branch]:
 		print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		return 0
@@ -723,3 +730,48 @@ def del_branch(username, project_name, branch_name):
 				del_dir(var.global_destination+"/"+project_name+"/"+branch_name)
 			else: 
 				return	
+
+def merge(username,project_name,branch_name):
+	br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
+	master_dest = var.users_destination + username + '/' + project_name + '/' + 'master'
+	changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
+
+	for path in changes.keys():
+		element = path.split(branch_name)[-1]
+		if changes[path][0] == "+":
+			if os.path.isdir(br_dest + '/' + element):
+				try:
+					os.chdir(master_dest)
+					os.mkdir(element)	
+				except:
+					continue
+			else:		
+				ovf.write_file(master_dest + "/" + element,changes[path][-1])	
+		elif changes[path][0] == "...":
+			f_new = open(master_dest + '/' + element[:-4] + '(branch_' + branch_name + ').txt','w')
+				#(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt','w')
+			f_br = open(br_dest + element,'r')
+			string = [line for line in f_br]
+			f_mr = open(master_dest + element,'r')
+			string_mr = [line for line in f_mr]
+			flag = True
+			num = 1
+			for line in range(max(len(string),len(string_mr))):
+				if line+1 not in changes[path][1].keys():
+					f_new.write(string[line])
+				elif (changes[path][1][line+1][0] == '+') or (changes[path][1][line+1][0] == '...' and changes[path][1][line+1][1] == '\n'):
+					f_new.write(changes[path][1][line+1][2])
+				else:
+					f_new.write(changes[path][1][line+1][2])
+					flag = False
+	
+			if flag == True:
+				os.remove(master_dest + "/" + element)	
+				f_new.close()
+				os.chdir(master_dest)
+				os.rename(element[2:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
+			f_new.close()
+			f_br.close()
+			f_mr.close()
+	intf.commit(username,project_name,branch_name)
+	intf.pre_push(username,project_name,branch_name)

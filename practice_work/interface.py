@@ -43,7 +43,7 @@ def exit(username):
 	else:
 		return False
 def commit(username,project_name,branch_name):
-	if not uc.have_user_some_lvl_of_rights(username,project_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
 		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
 		 return
 	check = uc.check_updates(username,project_name,branch_name)
@@ -51,7 +51,9 @@ def commit(username,project_name,branch_name):
 		element = {}
 		element["user"] = username
 		element["date-time"] = datetime.now()
-		element["changes"]=chingl.global_changes(username,project_name,branch_name)
+		gl_dest=var.global_destination+"/"+project_name + '/' + branch_name + '/'
+		lc_dest=var.users_destination+"/"+username+"/"+project_name + '/' + branch_name + '/'
+		element["changes"]=chingl.global_changes(username,project_name,branch_name,gl_dest,lc_dest)
 		if element["changes"]=={}:
 			print("Не было внесено никаких изменений")
 			return
@@ -252,9 +254,9 @@ def interface(username):
 			if exit(username):
 				return
 		else:
-			print("Такой команды нет.")		
-
+			print("Такой команды нет.")
 	print("Вы выбрали проект </"+project_name+"/>")
+	# branch_name = 'master'
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")
@@ -279,7 +281,30 @@ def interface(username):
 		elif command == "commit":
 			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
 			if choice in ["да", "д", "yes", "y"]:
-				commit(username,project_name,branch_name)
+				try:
+					commit(username,project_name,branch_name)
+				except UnboundLocalError:
+					print("у вас еще не выбрана ветка, в которой вы будете работать")
+					# commit(username,project_name,"master")
+					os.chdir(var.users_destination+"/"+username+"/"+project_name)
+					print("доступны такие ветки:")
+					mass_of_br = os.listdir()
+					for i in mass_of_br:
+						print(i)
+					print("Пожадуйста, выберите одну из предоставленных веток")
+					while 1:
+						current_branch = input()
+						if current_branch in mass_of_br:
+							commit(username,project_name,current_branch)
+							break
+						else:
+							print("такой ветки нет!")
+					# while 1:
+
+						# try:
+						# 	commit(username,project_name,input())
+						# except:
+						# 	print("такой ветки не существует, попробуйте еще раз")
 			elif choice in ['нет', 'н', 'no', 'n']:
 				what_to_commit(username, project_name)
 			else:
@@ -360,7 +385,8 @@ def interface(username):
 			branch_name=input(">> ")
 			uc.make_branch(username,project_name,branch_name)
 			print("Вы выбрали ветку </"+branch_name+"/>")
-		elif command == "set_branch":
+
+		elif command == "change_branch":
 			print("Введите название ветки")
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/"+project_name+'/')
@@ -373,6 +399,9 @@ def interface(username):
 					branch_name=uc.make_branch(username,project_name,branch_name)
 					print("Вы выбрали ветку </"+branch_name+"/>")
 
+
+		elif command == 'merge':
+			uc.merge(username,project_name,branch_name)
 
 
 		else:

@@ -232,7 +232,7 @@ def interface(username):
 		else:
 			print("Такой команды нет.")
 	print("Вы выбрали проект </"+project_name+"/>")
-	branch_name = 'master'
+	# branch_name = 'master'
 	print("Выберите команду(чтобы узнать список команд, наберите help)")
 	while 1:
 		command = input(">> ")
@@ -264,10 +264,17 @@ def interface(username):
 					# commit(username,project_name,"master")
 					os.chdir(var.users_destination+"/"+username+"/"+project_name)
 					print("доступны такие ветки:")
-					for i in os.listdir():
+					mass_of_br = os.listdir()
+					for i in mass_of_br:
 						print(i)
 					print("Пожадуйста, выберите одну из предоставленных веток")
-					commit(username,project_name,input())
+					while 1:
+						current_branch = input()
+						if current_branch in mass_of_br:
+							commit(username,project_name,current_branch)
+							break
+						else:
+							print("такой ветки нет!")
 					# while 1:
 
 						# try:

@@ -12,14 +12,14 @@ except:
 	pass
 
 def registration_form():
-	new_username = input("введите имя нового пользователя: ")
+	new_username = input("Введите имя нового пользователя: ")
 	while 1:
 	
-		password = getpass.getpass("введите пароль для нового пользователя: ")
-		if password == getpass.getpass("введите пароль повторно: "):
+		password = getpass.getpass("Введите пароль для нового пользователя: ")
+		if password == getpass.getpass("Введите пароль повторно: "):
 			break
 		else:
-			print("пароли не совпадают, введите заново\n")
+			print("Пароли не совпадают, введите заново\n")
 	print()		
 	users[new_username] = hl.md5(password.encode()).hexdigest()
 	try:
@@ -37,22 +37,22 @@ def registration_form():
 def login():
 	while 1:
 		
-		current_username = input("введите имя пользователя: ")
+		current_username = input("Введите имя пользователя: ")
 		if current_username not in users.keys():
-			print("пользователь </"+current_username+ "/> еще не был  зарегистрирован")
-			if input("хотите ли зарегистрировать нового пользователя?(д/н)\n>>").lower() in ["yes","да","y","д"]:
+			print("Пользователь </"+current_username+ "/> еще не был  зарегистрирован")
+			if input("Хотите ли зарегистрировать нового пользователя?(д/н)\n>> ").lower() in ["yes","да","y","д"]:
 				registration_form()
 		else:
 			break
 	while 1:
-		current_password = hl.md5(getpass.getpass("введите пароль: ").encode()).hexdigest()
+		current_password = hl.md5(getpass.getpass("Введите пароль: ").encode()).hexdigest()
 		if current_password == users[current_username]:
 			try:
 				os.chdir(var.users_destination + "/"+current_username+"/")
 			except:
 				os.mkdir(var.users_destination + "/"+current_username+"/")
 				os.chdir(var.users_destination + "/"+current_username+"/")
-			print(os.getcwd())
+			#print(os.getcwd())
 			print("ok")
 			break
 	return current_username

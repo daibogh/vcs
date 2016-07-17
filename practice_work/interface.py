@@ -220,10 +220,10 @@ def interface(username):
 			f = open('users_rights_for_projects.txt','wb')
 			pickle.dump(base_struct, f)
 			f.close()'''
-		print("Вы можете выбрать свой проект(сhoose)")
-		print("создать новый(make)")
-		print("загрузить проект из глобальной директории(load)")
-		print("или выйти(exit)")
+		print("Вы можете:\n-Выбрать свой проект(сhoose)")
+		print("-Создать новый(make)")
+		print("-Загрузить проект из глобальной директории(load)")
+		print("-Или выйти(exit)")
 		command=input(">> ")
 		if command == "choose":
 			print("Выберите проект")
@@ -264,13 +264,13 @@ def interface(username):
 			project_name=mk_prjct(username)
 			print("Вы выбрали проект </"+project_name+"/>")
 		elif command == "set_project":
-			project_name = input("введите название проекта\n")
+			project_name = input("Введите название проекта\n")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
 				print("Вы выбрали проект </"+project_name+"/>")
 			else:
-				print("у вас нет такого проекта")
+				print("У вас нет такого проекта")
 				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
 					project_name=mk_prjct(username)
 					print("Вы выбрали проект </"+project_name+"/>")
@@ -291,9 +291,9 @@ def interface(username):
 					mass_of_br = os.listdir()
 					for i in mass_of_br:
 						print(i)
-					print("Пожадуйста, выберите одну из предоставленных веток")
+					print("Пожалуйста, выберите одну из предоставленных веток")
 					while 1:
-						branch_name = input()
+						branch_name = input(">> ")
 						if branch_name in mass_of_br:
 							commit(username,project_name,branch_name)
 							break

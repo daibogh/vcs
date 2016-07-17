@@ -73,14 +73,14 @@ def del_last_commit(username,project_name,branch_name):
 	global_stack = sc.load_g(project_name,branch_name)
 	local_stack = sc.load_l(username, project_name,branch_name,branch_name)
 	if local_stack in global_stack:
-		print("невозможно удалить последний коммит, обратитесь к администратору")
+		print("Невозможно удалить последний коммит, обратитесь к администратору")
 		return
 	else:
-		print("вы уверены, что хотите удалить последний коммит?(д/н)")
+		print("Вы уверены, что хотите удалить последний коммит?(д/н)")
 		if input().lower() in ["да","д","yes","y"]:
 			local_stack = local_stack[:-1]
 			sc.dump_l(username,project_name,local_stack,branch_name)
-			print("удаление прошло успешно")
+			print("Удаление прошло успешно")
 			return 0
 
 
@@ -93,7 +93,7 @@ def make_project(username,project_name):
 		print("Такое название уже есть, назвать по-другому или удалить проект с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
 		while 1:
 			if int(input(">> ")) == 1:
-				new_project_name = input("введите новое название проекта\n")
+				new_project_name = input("Введите новое название проекта\n")
 				make_project(username,new_project_name)
 				return 0
 			elif int(input(">> ")) == 2:
@@ -676,10 +676,10 @@ def make_branch(username,project_name,branch_name):
 	try:
 		os.mkdir(gl_path)
 	except:
-		print("такое название уже есть, назвать по-другому или удалить ветку с данным именем?\n1-выбрать другое имя;\n2-удалить ветку;")
+		print("Такое название уже есть, назвать по-другому или удалить ветку с данным именем?\n1-выбрать другое имя;\n2-удалить ветку;")
 		while 1:
 			if int(input(">> ")) == 1:
-				new_branch_name = input("введите новое название ветки\n")
+				new_branch_name = input("Введите новое название ветки\n")
 				make_branch(username,project_name,new_branch_name)
 				return 0
 			elif int(input(">> ")) == 2:

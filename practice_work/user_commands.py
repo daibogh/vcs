@@ -77,7 +77,7 @@ def del_last_commit(username,project_name,branch_name):
 		return
 	else:
 		print("Вы уверены, что хотите удалить последний коммит?(д/н)")
-		if input().lower() in ["да","д","yes","y"]:
+		if input(">> ").lower() in ["да","д","yes","y"]:
 			local_stack = local_stack[:-1]
 			sc.dump_l(username,project_name,local_stack,branch_name)
 			print("Удаление прошло успешно")
@@ -93,7 +93,7 @@ def make_project(username,project_name):
 		print("Такое название уже есть, назвать по-другому или удалить проект с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
 		while 1:
 			if int(input(">> ")) == 1:
-				new_project_name = input("Введите новое название проекта\n")
+				new_project_name = input("Введите новое название проекта\n>> ")
 				make_project(username,new_project_name)
 				return 0
 			elif int(input(">> ")) == 2:
@@ -106,13 +106,7 @@ def make_project(username,project_name):
 	pickle.dump(global_stack,f)
 	f.close()
 	local_stack = global_stack
-	try:
-		os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/')
-	except:
-		os.chdir(var.users_destination+"/"+username+"/")
-		os.rename(project_name, project_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
-		os.mkdir(var.users_destination+"/"+username+"/"+project_name+"/")
-
+	os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/')
 	os.mkdir(var.users_destination+"/"+username+"/"+project_name+ '/' + 'master')
 	os.chdir(var.users_destination+"/"+username+"/"+project_name +'/' + 'master')
 	f = open(".stack.txt","wb")
@@ -258,7 +252,7 @@ def add_users_to_prj(username, project_name):
 		print('Вы хотите добавить новых пользователей в весь проект? 1 - да; 2 - нет; 3 - выход')
 		while 1:
 			try:
-				choice = int(input())
+				choice = int(input(">> "))
 				if choice in [1, 2, 3]:
 					break
 				else:
@@ -281,7 +275,7 @@ def add_users_to_prj(username, project_name):
 				print('\t', cur_branch)
 			while 1:
 				print('Выберите ветку, в которую вы хотите добавить новых пользователей:')
-				branch = input()
+				branch = input(">> ")
 				if branch in users_rights[project_name].keys():
 					print('Выбрана ветка', branch)
 					break
@@ -293,8 +287,7 @@ def add_users_to_prj(username, project_name):
 			
 		else:
 			print('Введите через пробел имена пользователей, которых вы хотите добавить в ветку', branch, 'проекта', project_name+':')
-		print('>', end=' ')
-		users = input().split()  # users это ['Dima', 'Denis']
+		users = input(">> ").split()  # users это ['Dima', 'Denis']
 		for user in users:  # Удаляем повторяющихся юзеров
 			if users.count(user) != 1:
 				while users.count(user) != 1:
@@ -338,7 +331,7 @@ def add_users_to_prj(username, project_name):
 			while 1:
 				try:
 					print('Для продолжения нажмите 1, для отмены - 2')
-					choice = int(input())
+					choice = int(input(">> "))
 					if choice == 1 or choice == 2:
 						break
 					else:
@@ -373,7 +366,7 @@ def add_users_to_prj(username, project_name):
 			while 1:
 				try:
 					print('Для продолжения нажмите 1, для отмены - 2')
-					choice = int(input())
+					choice = int(input(">> "))
 					if choice == 1 or choice == 2:
 						break
 					else:
@@ -406,7 +399,7 @@ def del_users_from_prj(username, project_name):
 		print('Вы хотите удалить пользователей из всего проекта? 1 - да; 2 - нет; 3 - выход')
 		while 1:
 			try:
-				choice = int(input())
+				choice = int(input(">> "))
 				if choice in [1, 2, 3]:
 					break
 				else:
@@ -420,9 +413,11 @@ def del_users_from_prj(username, project_name):
 		users_rights = pickle.load(f)
 		f.close()
 		isSomeoneForDel = False
-		for branch in users_rights[project_name].keys():
-			if len(users_rights[project_name][branch]) > 2:
-				isSomeoneForDel = True
+		for branch in users_rights[project_name].keys(): 
+			if len(users_rights[project_name][branch]) > 3 and branch != 'master': 
+				isSomeoneForDel = True 
+		if len(users_rights[project_name]['master']) >2: 
+			isSomeoneForDel = True
 		if not isSomeoneForDel:
 			print('Вы являетесь единственным участником проекта. Команда удаления участников из проекта '+project_name+' была прервана.')
 			continue
@@ -436,8 +431,7 @@ def del_users_from_prj(username, project_name):
 			print('\t', user)
 		if choice == 1:
 			print('Введите через пробел имена пользователей, которых вы хотите удалить из проекта', project_name+':')
-			print('>', end=' ')
-			users = input().split()  # users это ['Dima', 'Denis']
+			users = input(">> ").split()  # users это ['Dima', 'Denis']
 			for user in users:  # Удаляем повторяющихся юзеров
 				if users.count(user) != 1:
 					while users.count(user) != 1:
@@ -468,7 +462,7 @@ def del_users_from_prj(username, project_name):
 			while 1:
 				try:
 					print('Для продолжения нажмите 1, для отмены - 2')
-					choice = int(input())
+					choice = int(input(">> "))
 					if choice == 1 or choice == 2:
 						break
 					else:
@@ -497,13 +491,13 @@ def del_users_from_prj(username, project_name):
 					print('\t', user)
 			while 1:
 				print('Выберите ветку, из которой вы хотите удалить пользователей:')
-				branch = input()
+				branch = input(">> ")
 				if branch in users_rights[project_name].keys():
 					print('Выбрана ветка', branch)
 					break
 			print('Введите через пробел имена пользователей, которых вы хотите удалить из ветки', branch, 'проекта', project_name+':')
-			print('>', end=' ')
-			users = input().split()  # users это ['Dima', 'Denis']
+			print('>>', end=' ')
+			users = input(">> ").split()  # users это ['Dima', 'Denis']
 			for user in users:  # Удаляем повторяющихся юзеров
 				if users.count(user) != 1:
 					while users.count(user) != 1:
@@ -532,7 +526,7 @@ def del_users_from_prj(username, project_name):
 			while 1:
 				try:
 					print('Для продолжения нажмите 1, для отмены - 2')
-					choice = int(input())
+					choice = int(input(">> "))
 					if choice == 1 or choice == 2:
 						break
 					else:
@@ -569,7 +563,7 @@ def check_users_requests(username):
 				print('\t',str(counter)+':', requset[0], 'пригласил вас в проект', requset[1], 'в ветку', branch)
 		while 1:
 			try:
-				answer = [int(i) for i in input('Введите через пробел номера проектов, в которые вы вступите(все остальные приглашения будут удалены)\n>').split()]
+				answer = [int(i) for i in input('Введите через пробел номера проектов, в которые вы вступите(все остальные приглашения будут удалены)\n>> ').split()]
 				break
 			except:
 				print('Ошибка ввода. Пожалуйста, введите корректные номера приглашений')
@@ -588,7 +582,7 @@ def check_users_requests(username):
 					print('\tВладелец проекта:', request[0], '\tНазвание проекта:', request[1], '\tВетка:', branch)
 		while 1:
 			try:
-				choice = int(input('Для продолжения нажмите 1, для отмены - 0\n>'))
+				choice = int(input('Для продолжения нажмите 1, для отмены - 0\n>> '))
 				if choice in [0, 1]:
 					break
 				else:
@@ -600,7 +594,7 @@ def check_users_requests(username):
 			for branch in users_requests[username].keys():
 				for request in users_requests[username][branch]:
 					counter += 1
-					print('request ==',requset)
+					#print('request ==',requset)
 					if counter in answer:
 						users_rights[request[1]][branch].append(username)
 			del(users_requests[username])
@@ -681,7 +675,7 @@ def make_branch(username,project_name,branch_name):
 		print("Такое название уже есть, назвать по-другому или удалить ветку с данным именем?\n1-выбрать другое имя;\n2-удалить ветку;")
 		while 1:
 			if int(input(">> ")) == 1:
-				new_branch_name = input("Введите новое название ветки\n")
+				new_branch_name = input("Введите новое название ветки\n>> ")
 				make_branch(username,project_name,new_branch_name)
 				return 0
 			elif int(input(">> ")) == 2:
@@ -690,12 +684,7 @@ def make_branch(username,project_name,branch_name):
 	f = open(gl_path + '/' + '.stack.txt','wb')
 	pickle.dump(stack_struct,f)
 	f.close()
-	try:			
-		os.mkdir(lc_path)
-	except:
-		os.chdir(var.users_destination+"/"+username+"/"+project_name)
-		os.rename(branch_name, branch_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
-		os.mkdir(lc_path)
+	os.mkdir(lc_path)
 	f = open(lc_path + '/' + '.stack.txt','wb')
 	pickle.dump(stack_struct,f)
 	f.close()
@@ -719,20 +708,62 @@ def del_dir(_dir):
 
 def del_project(username, project_name):
 	if have_user_high_lvl_of_rights(username, project_name, "master"):
-			print("Вы уверены, что хотите удалить проект </"+project_name+"/>?")
+			print("Вы уверены, что хотите удалить проект </"+project_name+"/>?(д/н)")
 			if input(">> ").lower() in ["да", "д", "yes", "y"]:
 				del_dir(var.global_destination+"/"+project_name)
-			else: 
-				return	
+				os.chdir(var.users_destination+"/"+username+"/")
+				os.rename(project_name, project_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
+				os.chdir(var.administration)
+				f = open('users_rights_for_projects.txt', 'rb')
+				obj = pickle.load(f)
+				f.close()
+				new_obj={}
+				for prj in obj.keys():
+					if prj != project_name:
+						new_obj[prj]=obj[prj]
+				f = open('users_rights_for_projects.txt', 'wb') 
+				pickle.dump(new_obj, f) 
+				f.close()
+				print("Проект </"+project_name+"/> успешно удален.")		
+				return 1
+			else:
+				print("Не удалось удалить проект </"+project_name+"/>.") 
+				return 0	
 
 
 def del_branch(username, project_name, branch_name):
 	if have_user_high_lvl_of_rights(username, project_name, branch_name):
-			print("Вы уверены, что хотите удалить ветку </"+branch_name+"/> в проекте </"+project_name+"/>?")
+		if branch_name!="master":
+			print("Вы уверены, что хотите удалить ветку </"+branch_name+"/> в проекте </"+project_name+"/>?(д/н)")
 			if input(">> ").lower() in ["да", "д", "yes", "y"]:
 				del_dir(var.global_destination+"/"+project_name+"/"+branch_name)
-			else: 
-				return	
+				os.chdir(var.users_destination+"/"+username+"/"+project_name)
+				os.rename(branch_name, branch_name+"("+datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0]+")")
+				os.chdir(var.administration)
+				f = open('users_rights_for_projects.txt', 'rb')
+				obj = pickle.load(f)
+				f.close()
+				new_obj={}
+				for prj in obj.keys():
+					if prj == project_name:
+						new_obj[prj]={}
+						for brnch in obj[prj].keys():
+							if brnch != branch_name:
+								new_obj[prj][brnch]=obj[prj][brnch]
+					else:
+						new_obj[prj]=obj[prj]				
+				f = open('users_rights_for_projects.txt', 'wb') 
+				pickle.dump(new_obj, f) 
+				f.close()
+				print("Ветка </"+branch_name+"/> успешно удалена.")
+				return 1
+			else:
+				print("Не удалось удалить ветку </"+branch_name+"/>.") 
+				return 0
+		else:
+			print("Удалив ветку </master/>, вы удалите весь проект </"+project_name+"/>.")
+			return del_project(username, project_name)
+
 
 def merge(username,project_name,branch_name):	
 	br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name

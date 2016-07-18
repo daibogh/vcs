@@ -37,7 +37,7 @@ def registration_form():
 def login():
 	while 1:
 		
-		current_username = input("Введите имя пользователя: ")
+		current_username = input("Вход\nВведите имя пользователя: ")
 		if current_username not in users.keys():
 			print("Пользователь </"+current_username+ "/> еще не был  зарегистрирован")
 			if input("Хотите ли зарегистрировать нового пользователя?(д/н)\n>> ").lower() in ["yes","да","y","д"]:

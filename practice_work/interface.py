@@ -38,7 +38,7 @@ def mk_prjct(username):
 	uc.make_project(username,prj_name)
 	return prj_name
 def exit(username):
-	if input("Вы уверены, что хотите выйти из текущей сессии пользователя </"+username+"/>?(д/н) \n>>").lower() in ["yes","да","y","д"]:
+	if input("Вы уверены, что хотите выйти из текущей сессии пользователя </"+username+"/>?(д/н)\n>> ").lower() in ["yes","да","y","д"]:
 		return True
 	else:
 		return False
@@ -167,7 +167,7 @@ def pre_pull(username,project_name,branch_name):
 	of.pull(local_stack,global_stack,username,project_name,branch_name)
 
 
-def del_last_commit(username, project_name,branch_name):
+'''def del_last_commit(username, project_name,branch_name):
     global_stack = sc.load_g(project_name,branch_name)
     local_stack = sc.load_l(username, project_name,branch_name)
     if local_stack in global_stack:
@@ -179,9 +179,10 @@ def del_last_commit(username, project_name,branch_name):
             local_stack = local_stack[:-1]
             sc.dump_l(username, project_name, local_stack,branch_name)
             print("удаление прошло успешно")
-            return 0
+            return 0'''
 
 def show_projects(username):
+	count=0
 	os.chdir(var.administration)
 	f = open('users_rights_for_projects.txt', 'rb')
 	obj = pickle.load(f)
@@ -190,10 +191,15 @@ def show_projects(username):
 	for project in obj.keys():
 		for branch in obj[project].keys():
 			if username in obj[project][branch]:
-				print(project+"--"+branch+"\n")
-	print()			
+				print("Проект: "+project+", ветка: "+branch+"\n")
+				count+=1
+	if count==0:
+		return 0
+	else:
+		return 1						
 
 def show_loc_projects(username):
+	count=0
 	os.chdir(var.users_destination+"/"+username)
 	prj_list=os.listdir()
 	os.chdir(var.administration)
@@ -204,12 +210,14 @@ def show_loc_projects(username):
 	for project in obj.keys():
 		for branch in obj[project].keys():
 			if username in obj[project][branch] and project in prj_list:
-				print(project+"--"+branch+"\n")
-	print()			
+				print("Проект: "+project+", ветка: "+branch+"\n")
+				count+=1
+	if count==0:
+		return 0
+	else:
+		return 1					
 
 
-
-	print("End-############################\n")
 def interface(username):
 	while 1:
 		'''if not os.path.exist(var.administration + 'users_requests.txt'):
@@ -229,17 +237,24 @@ def interface(username):
 		command=input(">> ")
 		if command == "choose":
 			print("Выберите проект")
-			show_loc_projects(username)
+			if not show_loc_projects(username):
+				print("У вас нет доступных проектов.\n")
+				continue
 			project_name=input(">> ")
 			print("Выберите ветвь")
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
-				if uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
-					break
+				os.chdir(var.users_destination+"/"+username+"/"+project_name)
+				branch_list=os.listdir()
+				if branch_name in branch_list:
+					if uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
+						break
+				else:
+					print("В вашей копии проекта нет такой ветки, попробуйте загрузить её или выберите другую.\n")		
 			else:
-				print("В вашей локальной папке нет данного проекта, попробуйте загрузить его или создать новый.\n")
+				print("В вашей локальной папке нет данного проекта, попробуйте загрузить его или создать новый, или выберите другой.\n")
 
 		elif command == "make":
 			project_name=mk_prjct(username)
@@ -247,7 +262,9 @@ def interface(username):
 			break
 		elif command == "load":
 			print("Выберите проект")
-			show_projects(username)
+			if not show_projects(username):
+				print("У вас нет доступных для загрузки проектов.\n")
+				continue
 			project_name=input(">> ")
 			print("Выберите ветку")
 			branch_name=input(">> ")
@@ -268,24 +285,33 @@ def interface(username):
 		command = input(">> ")
 		if command == "make_project":
 			project_name=mk_prjct(username)
-			print("Вы выбрали проект </"+project_name+"/>")
+			branch_name="master"
+			print("Вы выбрали проект </"+project_name+"/>\nВетвь </"+branch_name+"/>")
 		elif command == "set_project":
-			project_name = input("Введите название проекта\n")
+			print("Выберите проект")
+			if not show_loc_projects(username):
+				print("У вас нет доступных проектов.\n")
+			project_name=input(">> ")
+			print("Выберите ветвь")
+			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
 			if project_name in prj_list:
-				print("Вы выбрали проект </"+project_name+"/>")
+				os.chdir(var.users_destination+"/"+username+"/"+project_name)
+				branch_list=os.listdir()
+				if branch_name in branch_list:
+					if uc.have_user_some_lvl_of_rights(username, project_name, branch_name):
+						print("Вы выбрали проект </"+project_name+"/>\nВетвь </"+branch_name+"/>")
+				else:
+					print("В вашей копии проекта нет такой ветки, попробуйте загрузить её или выберите другую.\n")		
 			else:
-				print("У вас нет такого проекта")
-				if input("Вы хотите создать проект?(д/н) ").lower() in ["да", "д", "yes", "y"]:
-					project_name=mk_prjct(username)
-					print("Вы выбрали проект </"+project_name+"/>")
+				print("В вашей локальной папке нет данного проекта, попробуйте загрузить его или создать новый, или выберите другой.\n")
 
 
 
 
 		elif command == "commit":
-			choice = input("Вы хотите закоммитить весь проект?(д/н) ").lower()
+			choice = input("Вы хотите закоммитить весь проект?(д/н)\n>> ").lower()
 			if choice in ["да", "д", "yes", "y"]:
 				try:
 					commit(username,project_name,branch_name)
@@ -311,6 +337,7 @@ def interface(username):
 						# 	commit(username,project_name,input())
 						# except:
 						# 	print("такой ветки не существует, попробуйте еще раз")
+				print("commit успешно выполнен.")		
 			elif choice in ['нет', 'н', 'no', 'n']:
 				what_to_commit(username, project_name)
 			else:
@@ -322,6 +349,7 @@ def interface(username):
 
 		elif command == "push":
 			pre_push(username,project_name,branch_name)
+			print("push успешно выполнен.")
 
 
 
@@ -329,6 +357,7 @@ def interface(username):
 
 		elif command == "update":
 			pre_pull(username,project_name,branch_name)
+			print("update успешно выполнен.")
 
 
 
@@ -345,6 +374,7 @@ def interface(username):
 
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
+			print("del_last_commit успешно выполнен.")
 
 
 
@@ -383,6 +413,13 @@ def interface(username):
 		elif command == "help":
 			dict_command[command]()
 
+		elif command=="del_project":
+			if uc.del_project(username, project_name):
+				break
+
+		elif command=="del_branch":
+			if uc.del_branch(username, project_name, branch_name):
+				break
 
 
 			
@@ -401,18 +438,21 @@ def interface(username):
 				print("Вы выбрали ветку </"+branch_name+"/>")
 			else:
 				print("у вас нету такой ветки")
-				if input("Вы хотите создать ветку?(д/н) ").lower() in ["да", "д", "yes", "y"]:
+				if input("Вы хотите создать ветку?(д/н)\n>> ").lower() in ["да", "д", "yes", "y"]:
 					branch_name=uc.make_branch(username,project_name,branch_name)
 					print("Вы выбрали ветку </"+branch_name+"/>")
 
 
 		elif command == 'merge':
 			uc.merge(username,project_name,branch_name)
+			print("merge успешно выполнен.")
 
 
 		else:
 			print('Такой команды нет. Пожалуйста, повторите ввод.')
-			helpme()		
+			helpme()
+
+	interface(username)					
 #import commands
 # def interface(user):
 # 	print("выберите команду(чтобы узнать список команд, наберите help)")

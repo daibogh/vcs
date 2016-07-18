@@ -255,7 +255,7 @@ def interface(username):
 				pre_pull(username,project_name,branch_name)
 				break
 			else: 
-				print("Такого проекта или ветки не существует. Попробуйсте создать его.\n")	
+				print("Такого проекта или ветки не существует. Попробуйте создать его.\n")	
 		elif command == "exit":
 			if exit(username):
 				return

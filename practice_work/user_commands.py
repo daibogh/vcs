@@ -251,7 +251,6 @@ def del_couple_commits(username,project_name,branch_name):
 ################################################	КОММАНДЫ ДЛЯ ПРАВ	################################################	
 def add_users_to_prj(username, project_name):
 	if not have_user_high_lvl_of_rights(username, project_name, 'master'):
-		print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
 		return
 	os.chdir(var.administration)
 	#############################
@@ -400,8 +399,7 @@ def add_users_to_prj(username, project_name):
 				#{username: { master: [ [project_owner1, prj_1], [project_owner22, prj_2] ]; branch1: [project3_owner, prj_3] }
 				#{project: { master: [ admin, ivan, dima ]; branch1: [admin, ivan] }
 def del_users_from_prj(username, project_name):
-	if not have_user_high_lvl_of_rights(username, project_name):
-		print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
+	if not have_user_high_lvl_of_rights(username, project_name, "master"):
 		return
 	os.chdir(var.administration)
 	while 1:

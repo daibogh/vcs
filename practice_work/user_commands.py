@@ -767,45 +767,51 @@ def del_branch(username, project_name, branch_name):
 
 def merge(username,project_name,branch_name):	
 	br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
+	gl_dest = var.global_destination+"/"+project_name + '/' + branch_name + '/'
 	master_dest = var.users_destination + username + '/' + project_name + '/' + 'master'
 	changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
-
-	for path in changes.keys():
-		element = path.split(branch_name)[-1]
-		if changes[path][0] == "+":
-			if os.path.isdir(br_dest + '/' + element):
-				try:
+	check_changes = chingl.global_changes(username,project_name,branch_name,gl_dest,br_dest)
+	if check_changes == {}:
+		for path in changes.keys():
+			element = path.split(branch_name)[-1]
+			if changes[path][0] == "+":
+				if os.path.isdir(br_dest + '/' + element):
+					try:
+						os.chdir(master_dest)
+						os.mkdir(element)	
+					except:
+						continue
+				else:		
+					ovf.write_file(master_dest + "/" + element,changes[path][-1])	
+			elif changes[path][0] == "...":
+				f_new = open(master_dest + '/' + element[:-4] + '(branch_' + branch_name + ').txt','w')
+					#(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt','w')
+				f_br = open(br_dest + element,'r')
+				string = [line for line in f_br]
+				f_mr = open(master_dest + element,'r')
+				string_mr = [line for line in f_mr]
+				flag = True
+				num = 1
+				for line in range(max(len(string),len(string_mr))):
+					if line+1 not in changes[path][1].keys():
+						f_new.write(string[line])
+					elif (changes[path][1][line+1][0] == '+') or (changes[path][1][line+1][0] == '...' and changes[path][1][line+1][1] == '\n'):
+						f_new.write(changes[path][1][line+1][2])
+					elif (changes[path][1][line+1][0] == '...' and changes[path][1][line+1][1] == changes[path][1][line+1][2][:-1] and changes[path][1][line+1][2][-1] == '\n'):
+						f_new.write(changes[path][1][line+1][2])
+					else:
+						f_new.write(changes[path][1][line+1][2])
+						flag = False
+				f_new.close()
+				f_br.close()
+				f_mr.close()
+				if flag == True:
+					os.remove(master_dest + "/" + element)	
 					os.chdir(master_dest)
-					os.mkdir(element)	
-				except:
-					continue
-			else:		
-				ovf.write_file(master_dest + "/" + element,changes[path][-1])	
-		elif changes[path][0] == "...":
-			f_new = open(master_dest + '/' + element[:-4] + '(branch_' + branch_name + ').txt','w')
-				#(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt','w')
-			f_br = open(br_dest + element,'r')
-			string = [line for line in f_br]
-			f_mr = open(master_dest + element,'r')
-			string_mr = [line for line in f_mr]
-			flag = True
-			num = 1
-			for line in range(max(len(string),len(string_mr))):
-				if line+1 not in changes[path][1].keys():
-					f_new.write(string[line])
-				elif (changes[path][1][line+1][0] == '+') or (changes[path][1][line+1][0] == '...' and changes[path][1][line+1][1] == '\n'):
-					f_new.write(changes[path][1][line+1][2])
-				else:
-					f_new.write(changes[path][1][line+1][2])
-					flag = False
-			f_new.close()
-			f_br.close()
-			f_mr.close()
-			if flag == True:
-				os.remove(master_dest + "/" + element)	
-				os.chdir(master_dest)
-				os.rename(element.split('/')[-1][:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
+					os.rename(element.split('/')[-1][:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
 
-	intf.commit(username,project_name,'master')
-	intf.pre_push(username,project_name,'master')
-	return
+		intf.commit(username,project_name,'master')
+		intf.pre_push(username,project_name,'master')
+		return
+	else:
+		print("Не было внесено никаких изменений\nИли Вы не зафиксировали их с помощью комманд commit и push")	

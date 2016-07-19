@@ -340,14 +340,14 @@ def interface(username):
 
 
 		elif command == 'exit':
-			if dict_command[command](username):
+			if exit(username):
 				return
 
 
 
 
 		elif command == "help":
-			dict_command[command]()
+			helpme()
 
 		elif command=="del_project":
 			if uc.del_project(username, project_name):

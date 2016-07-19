@@ -784,8 +784,7 @@ def merge(username,project_name,branch_name):
 				else:		
 					ovf.write_file(master_dest + "/" + element,changes[path][-1])	
 			elif changes[path][0] == "...":
-				f_new = open(master_dest + '/' + element[:-4] + '(branch_' + branch_name + ').txt','w')
-					#(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt','w')
+				f_new = open(master_dest + '/' + element[:-4] + '(branch_' + branch_name + ')(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt','w')
 				f_br = open(br_dest + element,'r')
 				string = [line for line in f_br]
 				f_mr = open(master_dest + element,'r')
@@ -808,7 +807,7 @@ def merge(username,project_name,branch_name):
 				if flag == True:
 					os.remove(master_dest + "/" + element)	
 					os.chdir(master_dest)
-					os.rename(element.split('/')[-1][:-4] + '(branch_' + branch_name + ').txt',element.split('/')[-1])
+					os.rename(element.split('/')[-1][:-4] + '(branch_' + branch_name + ')(date_time_' + datetime.now().isoformat().split("T")[0]+"_"+datetime.now().isoformat().split("T")[1].split(".")[0] + ').txt',element.split('/')[-1])
 
 		intf.commit(username,project_name,'master')
 		intf.pre_push(username,project_name,'master')

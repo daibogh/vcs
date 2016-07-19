@@ -814,4 +814,4 @@ def merge(username,project_name,branch_name):
 		intf.pre_push(username,project_name,'master')
 		return
 	else:
-		print("Не было внесено никаких изменений\nИли Вы не зафиксировали их с помощью комманд commit и push")	
+		print("Не было внесено никаких изменений\nИли Вы не зафиксировали их с помощью команд commit и push")	

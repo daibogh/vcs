@@ -47,9 +47,9 @@ def writing_variables(installing_directory):
 		else:
 			print("такой директории не существует, введите заново")	
 	f = open(installing_directory+"/variables.py","w")
-	f.write("global_destination = "+global_destination)
-	f.write("local_destination = "+local_destination)
-	f.write("administration = "+administration)
+	f.write("global_destination = \""+global_destination+"\"\n")
+	f.write("local_destination = \""+local_destination+"\"\n")
+	f.write("administration = \""+administration+"\"\n")
 	f.close()
 	os.chdir(installing_directory)
 	return 0

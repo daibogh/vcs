@@ -92,12 +92,14 @@ def make_project(username,project_name):
 	except:
 		print("Такое название уже есть, назвать по-другому или удалить проект с данным именем?\n1-выбрать другое имя;\n2-создать заново;")
 		while 1:
-			if int(input(">> ")) == 1:
+			ch = input(">> ")
+			if int(ch) == 1:
 				new_project_name = input("Введите новое название проекта\n>> ")
 				make_project(username,new_project_name)
 				return 0
-			elif int(input(">> ")) == 2:
+			elif int(ch) == 2:
 				del_project(username, project_name)
+				make_project(username,project_name)
 				return 0			
 	os.mkdir(var.global_destination+project_name+'/' + 'master')	
 	os.chdir(var.global_destination+project_name+'/' + 'master')

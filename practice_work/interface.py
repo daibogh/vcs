@@ -49,6 +49,7 @@ def commit(username,project_name,branch_name):
 		f = open(path_to_stack,"wb")
 		pickle.dump(stack,f)
 		f.close()
+		print("commit успешно выполнен.")
 	else:
 		print("Ваша версия устарела, обновите проект (update)")
 			
@@ -285,7 +286,7 @@ def interface(username):
 						# 	commit(username,project_name,input())
 						# except:
 						# 	print("такой ветки не существует, попробуйте еще раз")
-				print("commit успешно выполнен.")		
+				# print("commit успешно выполнен.")		
 			elif choice in ['нет', 'н', 'no', 'n']:
 				what_to_commit(username, project_name)
 			else:

@@ -48,25 +48,31 @@ def writing_variables(installing_directory):
 			print("такой директории не существует, введите заново")	
 	f = open(installing_directory+"/variables.py","w")
 	f.write("global_destination = \""+global_destination+"\"\n")
-	f.write("local_destination = \""+local_destination+"\"\n")
+	f.write("users_destination = \""+local_destination+"\"\n")
 	f.write("administration = \""+administration+"\"\n")
 	f.close()
 	os.chdir(installing_directory)
-	return 0
+	return administration
 def main():
 	f = open("bin_file.txt","rb")
-	mass = pickle.load(f)
+	s = pickle.load(f)
+	mass = s[-1]
+	_help = s[0]
 	f.close()
 	while 1:
 		installing_directory = input("введите адрес директории, куда устанавливать программу\n")
 		if os.path.exists(installing_directory):
 			os.chdir(installing_directory)
-			writing_variables(installing_directory)
+			path = writing_variables(installing_directory)
 			for file_obj in mass:
 				# print(file_obj.keys())
 				f = open(list(file_obj.keys())[0],"wb")
 				f.write(list(file_obj.values())[0])
 				f.close()
+			os.chdir(path)
+			f = open("help.txt","wb")
+			f.write(_help)
+			f.close()
 			break
 
 		else:

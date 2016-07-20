@@ -71,7 +71,7 @@ def check_updates(username,project_name,branch_name):
 
 def del_last_commit(username,project_name,branch_name):
 	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
-		 return
+		return
 	global_stack = sc.load_g(project_name,branch_name)
 	local_stack = sc.load_l(username, project_name,branch_name,branch_name)
 	if local_stack in global_stack:
@@ -142,8 +142,7 @@ def make_project(username,project_name):
     
 def show_com_username(username, project_name, num):
 	if not uc.have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
+		return
 	dirs_in_user = os.listdir(var.users_destination+username)
 	isEmpty = True
 	for dir_in_user in dirs_in_user:
@@ -221,9 +220,8 @@ def show_commit(username, project_name, num):
 		return
 
 def show_not_pushed(username,project_name,branch_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
+	if not have_user_some_lvl_of_rights(username,project_name, branch_name):
+		return
 	global_stack = sc.load_g(project_name,branch_name)
 	local_stack = sc.load_l(username,project_name,branch_name)
 	list_of_changes = []
@@ -236,9 +234,8 @@ def show_not_pushed(username,project_name,branch_name):
 	return list_of_changes
 
 def del_couple_commits(username,project_name,branch_name):
-	if not have_user_some_lvl_of_rights(username,project_name):
-		 print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
-		 return
+	if not have_user_some_lvl_of_rights(username,project_name, branch_name):
+		return
 	local_stack = sc.load_l(username,project_name,branch_name)
 	list_of_changes = show_not_pushed(username,project_name)
 	pushed_commits = []
@@ -677,6 +674,8 @@ def make_project_local(username, project_name,branch_name):
 	return 
 
 def make_branch(username,project_name,branch_name):
+	if not have_user_some_lvl_of_rights:
+		return
 	stack_struct = sc.make_stack(username,project_name)
 	gl_path = var.global_destination + '/' + project_name + '/' + branch_name
 	try:
@@ -776,6 +775,8 @@ def del_branch(username, project_name, branch_name):
 
 
 def merge(username,project_name,branch_name):	
+	if not have_user_some_lvl_of_rights(username, project_name, branch_name):
+		return
 	try:
 		br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
 	except FileNotFoundError:

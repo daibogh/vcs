@@ -9,7 +9,7 @@ import py_detour as py_dtour
 import find_changes as find_ch
 import changes_in_global as chingl
 from datetime import datetime
-
+branch_name = ""
 def helpme():
 	f = open(var.global_destination + '/bin/help.txt', 'r')
 	for line in f:
@@ -54,14 +54,15 @@ def commit(username,project_name,branch_name):
 		print("Ваша версия устарела, обновите проект (update)")
 			
 def what_to_commit(username, project_name):
-    if not have_user_some_lvl_of_rights(username,project_name):
+    if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
         print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
         return
-    commit(username, project_name)
-    os.chdir(var.users_destination + username + '/' + project_name)
-    f = open('stack.txt','rb')
-    stack = pickle.load(f)
-    f.close()
+    commit(username, project_name,branch_name)
+    # os.chdir(var.users_destination + username + '/' + project_name)
+    # f = open('.stack.txt','rb')
+    # stack = pickle.load(f)
+    # f.close()
+    stack = sc.load_l(username,project_name,branch_name)
     print('Список изменённых файлов')
     kk = 1
     for changed_file in stack[-1]['changes'].keys():
@@ -94,9 +95,10 @@ def what_to_commit(username, project_name):
                 del (stack[-1]['changes'][file_to_del_from_stack])
                 break
         #
-        f = open('stack.txt', 'wb')
-        pickle.dump(stack, f)
-        f.close()
+        # f = open('stack.txt', 'wb')
+        # pickle.dump(stack, f)
+        # f.close()
+        sc.dump_l(username,project_name,stack,branch_name)
         print('Добавление коммита было успешно завершено')
     else:
         del_last_commit(username, project_name,branch_name)
@@ -104,19 +106,19 @@ def what_to_commit(username, project_name):
         return
 
 def del_last_commit(username, project_name):
-    if not have_user_some_lvl_of_rights(username,project_name):
+    if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
         print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
         return
-    global_stack = sc.load_g(project_name)
-    local_stack = sc.load_l(username, project_name)
-    if local_stack in global_stack:
+    global_stack = sc.load_g(project_name,branch_name)
+    local_stack = sc.load_l(username, project_name,branch_name)
+    if local_stack[-1] in global_stack:
         print("невозможно удалить последний коммит, обратитесь к администратору")
         return
     else:
         print("вы уверены, что хотите удалить последний коммит?(д/н)")
         if input().lower() in ["да", "д", "yes", "y"]:
             local_stack = local_stack[:-1]
-            sc.dump_l(username, project_name, local_stack)
+            sc.dump_l(username, project_name, local_stack,branch_name)
             print("удаление прошло успешно")
             return 0
 
@@ -191,6 +193,7 @@ def interface(username):
 				continue
 			project_name=input(">> ")
 			print("Выберите ветвь")
+			global branch_name
 			branch_name=input(">> ")
 			os.chdir(var.users_destination+"/"+username+"/")
 			prj_list = os.listdir()
@@ -207,6 +210,7 @@ def interface(username):
 
 		elif command == "make":
 			project_name=mk_prjct(username)
+			global branch_name
 			branch_name="master"
 			break
 		elif command == "load":
@@ -234,6 +238,7 @@ def interface(username):
 		command = input(">> ")
 		if command == "make_project":
 			project_name=mk_prjct(username)
+			global branch_name
 			branch_name="master"
 			print("Вы выбрали проект </"+project_name+"/>\nВетвь </"+branch_name+"/>")
 		elif command == "set_project":
@@ -321,7 +326,7 @@ def interface(username):
 
 		elif 'del_last_commit' in command:
 			del_last_commit(username, project_name)
-			print("del_last_commit успешно выполнен.")
+			# print("del_last_commit успешно выполнен.")
 
 
 

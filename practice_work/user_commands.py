@@ -434,6 +434,9 @@ def del_users_from_prj(username, project_name):
 		if choice == 1:
 			print('Введите через пробел имена пользователей, которых вы хотите удалить из проекта', project_name+':')
 			users = input(">> ").split()  # users это ['Dima', 'Denis']
+			if "admin" in users:
+				print("удаление администратора из проекта невозможно!!!")
+				return
 			for user in users:  # Удаляем повторяющихся юзеров
 				if users.count(user) != 1:
 					while users.count(user) != 1:
@@ -768,10 +771,18 @@ def del_branch(username, project_name, branch_name):
 
 
 def merge(username,project_name,branch_name):	
-	br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
+	try:
+		br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
+	except FileNotFoundError:
+		print("попхоже, сто у вас недостаточно прав для данной функции")
+		return
 	gl_dest = var.global_destination+"/"+project_name + '/' + branch_name + '/'
 	master_dest = var.users_destination + username + '/' + project_name + '/' + 'master'
-	changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
+	try:
+		changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
+	except FileNotFoundError:
+		print("попхоже, сто у вас недостаточно прав для данной функции")
+		return
 	check_changes = chingl.global_changes(username,project_name,branch_name,gl_dest,br_dest)
 	if check_changes == {}:
 		for path in changes.keys():

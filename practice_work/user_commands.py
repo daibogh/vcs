@@ -268,6 +268,9 @@ def add_users_to_prj(username, project_name):
 		f = open('users.txt', 'rb')
 		users = pickle.load(f)
 		f.close()
+		for user in users.keys():
+			if user != 'admin' and user != username:
+				print(user,end = "\t")
 		f = open('users_rights_for_projects.txt', 'rb')
 		users_rights = pickle.load(f)
 		f.close()

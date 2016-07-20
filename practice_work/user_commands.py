@@ -70,6 +70,8 @@ def check_updates(username,project_name,branch_name):
 
 
 def del_last_commit(username,project_name,branch_name):
+	if not uc.have_user_some_lvl_of_rights(username,project_name,branch_name):
+		 return
 	global_stack = sc.load_g(project_name,branch_name)
 	local_stack = sc.load_l(username, project_name,branch_name,branch_name)
 	if local_stack in global_stack:
@@ -624,13 +626,13 @@ def have_user_high_lvl_of_rights(username, project_name, branch):
 	f.close()
 	if branch == 'master':
 		if obj[project_name]['master'][0] != username and obj[project_name]['master'][1] != username:
-			print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+			print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
 			return 0
 		else:
 			return 1
 	else:
-		if obj[project_name][branch][2] != username:
-			print('Этот пользователь не обладает достаточным уровнем доступа для выполнения этой команды')
+		if obj[project_name][branch][0] != username and obj[project_name][branch][1] != username and obj[project_name][branch][2] != username:
+			print('Вы не обладаете достаточным уровнем доступа для выполнения этой команды')
 			return 0
 		else:
 			return 1

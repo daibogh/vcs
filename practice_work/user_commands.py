@@ -268,9 +268,9 @@ def add_users_to_prj(username, project_name):
 		f = open('users.txt', 'rb')
 		users = pickle.load(f)
 		f.close()
-		for user in users.keys():
-			if user != 'admin' and user != username:
-				print(user,end = "\t")
+		# for user in users.keys():
+		# 	if user != 'admin' and user != username:
+		# 		print(user,end = "\t")
 		f = open('users_rights_for_projects.txt', 'rb')
 		users_rights = pickle.load(f)
 		f.close()
@@ -774,6 +774,7 @@ def del_branch(username, project_name, branch_name):
 
 
 def merge(username,project_name,branch_name):	
+	
 	try:
 		br_dest = var.users_destination + username + '/' + project_name + '/' + branch_name
 	except FileNotFoundError:
@@ -784,7 +785,7 @@ def merge(username,project_name,branch_name):
 	try:
 		changes = chingl.global_changes(username,project_name,branch_name,master_dest,br_dest)
 	except FileNotFoundError:
-		print("попхоже, сто у вас недостаточно прав для данной функции")
+		print("похоже, сто у вас недостаточно прав для данной функции")
 		return
 	check_changes = chingl.global_changes(username,project_name,branch_name,gl_dest,br_dest)
 	if check_changes == {}:

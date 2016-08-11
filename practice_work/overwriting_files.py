@@ -16,28 +16,50 @@ def push(local_stack,global_stack,project_name,branch_name):
 		global_stack.append(element)
 		changes = element["changes"]
 		for path in changes.keys():
-			cur =var.users_destination+username+"/"+path
+			cur = var.users_destination+username+"/"+path
 			if changes[path][0] == "-":
-				if os.path.isdir(var.global_destination+path):
-					try:
-						os.chdir(var.global_destination)
-						os.rmdir(path)	
-					except:
-						continue
-				else:
-					try:
-						os.remove(var.global_destination + "/" + path)
-					except:
-						pass
+				# if os.path.isdir(var.global_destination+path):
+				# 	try:
+				# 		os.chdir(var.global_destination)
+				# 		os.rmdir(path)	
+				# 	except:
+				# 		continue
+				# else:
+				# 	try:
+				# 		os.remove(var.global_destination + "/" + path)
+				# 	except:
+				# 		pass
+				pre_path = "/"+"/".join(path.split("/"))+"/"
+				aft_path = path.split("/")[-1] + "/"
+				os.chdir(var.global_destination+"/"+pre_path)
+				print(os.getcwd())
+				print(pre_path)
+				print(aft_path)
+				os.system("rm -Rf " + aft_path )
+
 			elif changes[path][0] == "+":
-				if os.path.isdir(cur):
-					try:
-						os.chdir(var.global_destination)
-						os.mkdir(path)	
-					except:
-						continue
-				else:		
-					write_file(var.global_destination + "/" + path,changes[path][-1])	
+				# if os.path.isdir(cur):
+				# 	try:
+				# 		os.chdir(var.global_destination)
+				# 		os.mkdir(path)	
+				# 	except:
+				# 		continue
+				# else:		
+				# 	write_file(var.global_destination + "/" + path,changes[path][-1])	
+				try:
+					os.mkdir(var.global_destination+"/"+path)
+				except FileNotFoundError:
+					os.makedirs(var.global_destination+"/"+path)
+			
+
+			elif changes[path][0] == "+f":
+				write_file(var.global_destination + "/" + path,changes[path][-1])
+			
+
+			elif changes[path][0] == "-f":
+				os.remove(var.global_destination + "/" + path)
+			
+
 			elif changes[path][0] == "...":
 				overwrite_file(var.users_destination+"/"+username+"/"+path,var.global_destination + path,changes[path][-1])				
 				
@@ -93,7 +115,9 @@ def pull(local_stack,global_stack,username,project_name,branch_name):
 				if os.path.isdir(var.users_destination+username+path):
 					try:
 						os.chdir(var.var.users_destination+username)
-						os.rmdir(path)	
+						print(os.getcwd())
+						print(path)
+						os.system("rm -Rf "+path)	
 					except:
 						continue
 				else:
